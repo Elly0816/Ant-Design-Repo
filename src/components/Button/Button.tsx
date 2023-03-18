@@ -1,8 +1,8 @@
 import "./Button.css";
 import { COUNTRIES } from "../../helpers/countries";
-import { ReactElement, useState, useEffect } from 'react';
-import type { MenuProps } from 'antd';
-import { Button, Dropdown, Space } from 'antd';
+import { ReactElement, useState, useEffect, CSSProperties } from 'react';
+import { MenuProps, Select } from 'antd';
+import { Space, SelectProps } from 'antd';
 
 interface COUNTRY {
     "name": string,
@@ -23,65 +23,68 @@ interface COUNTRY {
     "flag": string
 }
 
-const items: MenuProps['items'] = [
-  {
-    key: '1',
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-        1st menu item
-      </a>
-    ),
-  },
-  {
-    key: '2',
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-        2nd menu item
-      </a>
-    ),
-  },
-  {
-    key: '3',
-    label: (
-      <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
-        3rd menu item
-      </a>
-    ),
-  },
-];
 
-const newItems: MenuProps['items'] = COUNTRIES.map((country: COUNTRY) => {
+const newItems: SelectProps[] = COUNTRIES.reduce((arr:SelectProps[] , country: COUNTRY) => {
+    if (!arr.some(item => item?.id === country.currency.code)) {
+      let countryCode: string;
+      let countryName: string;
 
-    return ({
-        key: country.currency.code,
-        label: (<div>
-            <img src={`https://flagsapi.com/${country.code}/shiny/16.png`} alt={country.name} />
-            <span>{country.currency.code}</span>
-        </div>),
-        title: country.code
-    })
-});
+      switch (country.currency.code) {
+        case 'EUR':
+            countryCode = 'EU'
+            countryName = 'European Euro'
+            break;
+        case 'USD':
+            countryCode = 'USA'
+            countryName = 'United States Dollar'
+            break;
+      
+        default:
+            countryCode = country.code;
+            countryName = country.currency.name;
+            break;
+      }
+  
+      arr.push({
+        id: country.currency.code,
+        value: (
+          <div title={countryName}>
+            <img src={`https://flagsapi.com/${countryCode}/shiny/16.png`} alt={country.currency.name} />
+            <span>{country.currency.code} {country.currency.symbol}</span>
+          </div>
+        ),
+        // value: `${country.currency.code} - ${countryName}`
+      });
+    }
+    return arr;
+  }, []);
 
-// const dropDownStyle: 
+const dropDownStyle: CSSProperties = {
+    maxHeight: '10em',
+    height: '10em',
+    overflowY: "auto"
+}
 
 interface buttonType {
-    key: string,
+    id: string,
     label: JSX.Element,
     title: string
 }
 
 export default function myButton(): ReactElement {
-
-    const [countries, setCountries] = useState<MenuProps['items']>(newItems);
-    const [base, setBase] = useState<buttonType>(countries?.filter(country => {return country?.key === 'EUR'})[0] as unknown as buttonType);
-    const [toView, setToView] = useState(countries?.filter(country => {return country?.key !== base?.key}));
-
-    return <Space direction="vertical">
-    <Space wrap>
-        <Dropdown overlayClassName="dropDown" autoAdjustOverflow={true} menu={{items: newItems}} placement="bottomLeft" arrow={false}>
-        <Button>{base.label}</Button>
-        {/* <Button>{base?.key}</Button> */}
-        </Dropdown>
-        </Space>
+    
+    const [countries, setCountries] = useState<SelectProps[]>(newItems);
+    
+    return <Space wrap>
+    <Select
+      showSearch={true}
+      defaultValue={{ label: countries[0].value, value: countries[0].id }}
+      style={{ width: 120 }}
+      options={countries.map((item) => ({
+        label: item.value,
+        value: item.id,
+      }))}
+      labelInValue={true}
+    />
   </Space>
 };
