@@ -5,7 +5,9 @@ import { Button, Input, Space, Table } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
+import myButton from '../Button/Button';
 import "./Table.css";
+import Mybutton from '../Button/Button';
 
 interface DataType {
   key: string;
@@ -42,6 +44,16 @@ const data: DataType[] = [
     address: 'London No. 2 Lake Park',
   },
 ];
+
+for (let i=5; i< 50; i++){
+    const toAppend: DataType = {
+        key: (i).toString(),
+        name: `Joe${i} Simon${i+1}`,
+        age: i+20,
+        address: `Somwhere at street ${i}`
+    }
+    data.push(toAppend);
+}
 
 export default function myTable (): ReactElement {
   const [searchText, setSearchText] = useState('');
@@ -190,6 +202,9 @@ export default function myTable (): ReactElement {
 
   return <div className='table'>
         <div style={{ marginBottom: 16 }}>
+            <div className='picker'>
+                <Mybutton/>
+            </div>
             <div className="table-button-div">
                 <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
                     {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
