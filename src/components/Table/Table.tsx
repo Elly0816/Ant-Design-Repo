@@ -12,8 +12,12 @@ import { tableData } from '../../helpers/getTableData';
 
 interface DataType {
   key: string;
-  flag: ReactElement
-  name: string;
+  name: {
+    countryCode: string,
+    currencySymbol: string,
+    currencyCode: string,
+    currencyName: string
+};
   rate: number;
   '7 day change': number;
   '1 month change': number;
@@ -130,11 +134,22 @@ export default function myTable (): ReactElement {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex]
-        .toString()
-        .toLowerCase()
-        .includes((value as string).toLowerCase()),
+    // onFilter: (value, record) =>
+    //   record[dataIndex]
+    //     .toString()
+    //     .toLowerCase()
+    //     .includes((value as string).toLowerCase()),
+    onFilter: (value, record): boolean => {
+      if (typeof value === 'string'){
+        const name = record[dataIndex] as {currencyName: string, currencyCode: string};
+        const regex = new RegExp(value, 'i');
+
+        // return (regex.test(name.currencyCode) || regex.test(name.currencyName));
+        return (name.currencyName.toLowerCase().includes(value.toLowerCase()) || 
+          name.currencyCode.toLowerCase().includes(value.toLowerCase()));
+      }
+      return false;
+    },
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
