@@ -1,7 +1,6 @@
 import { useRef, useState, ReactElement, useContext, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import type { InputRef } from 'antd';
-import { Button, Input, Space, Table } from 'antd';
+import { Button, Input, Space, Table, InputRef, Tag } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
@@ -23,42 +22,6 @@ interface DataType {
 
 type DataIndex = keyof DataType;
 
-// const data: DataType[] = [
-//   {
-//     key: '1',
-//     name: 'John Brown',
-//     age: 32,
-//     address: 'New York No. 1 Lake Park',
-//   },
-//   {
-//     key: '2',
-//     name: 'Joe Black',
-//     age: 42,
-//     address: 'London No. 1 Lake Park',
-//   },
-//   {
-//     key: '3',
-//     name: 'Jim Green',
-//     age: 32,
-//     address: 'Sydney No. 1 Lake Park',
-//   },
-//   {
-//     key: '4',
-//     name: 'Jim Red',
-//     age: 32,
-//     address: 'London No. 2 Lake Park',
-//   },
-// ];
-
-// for (let i=5; i< 50; i++){
-//     const toAppend: DataType = {
-//         key: (i).toString(),
-//         name: `Joe${i} Simon${i+1}`,
-//         age: i+20,
-//         address: `Somwhere at street ${i}`
-//     }
-//     data.push(toAppend);
-// }
 
 export default function myTable (): ReactElement {
   const [searchText, setSearchText] = useState('');
@@ -190,38 +153,22 @@ export default function myTable (): ReactElement {
       ),
   });
 
-  // const columns: ColumnsType<DataType> = [
-  //   {
-  //     title: 'Name',
-  //     dataIndex: 'name',
-  //     key: 'name',
-  //     width: '30%',
-  //     ...getColumnSearchProps('name'),
-  //   },
-  //   {
-  //     title: 'Age',
-  //     dataIndex: 'age',
-  //     key: 'age',
-  //     width: '20%',
-  //     ...getColumnSearchProps('age'),
-  //   },
-  //   {
-  //     title: 'Address',
-  //     dataIndex: 'address',
-  //     key: 'address',
-  //     ...getColumnSearchProps('address'),
-  //     sorter: (a, b) => a.address.length - b.address.length,
-  //     sortDirections: ['descend', 'ascend'],
-  //   },
-  // ];
 
   const columns: ColumnsType<DataType> = [
     {
       title: 'Name',
       dataIndex: 'name',
-      key: 'name',
+      key: 'key',
       width: '30%',
-      ...getColumnSearchProps('name')
+      ...getColumnSearchProps('name'),
+      render: ((name: {countryCode: string, currencyName: string, currencySymbol: string, currencyCode: string}) => 
+      <div title={name.currencyCode}>
+        <span>{name.currencySymbol}</span>
+        <br />
+        <img alt={name.currencyName} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+        <br />
+        <span>{name.currencyName}</span>
+      </div>)
     },
     {
       title: 'Rate',
@@ -229,7 +176,14 @@ export default function myTable (): ReactElement {
       key: 'rate',
       width: '20%',
       sorter: (a, b) => a.rate - b.rate,
-      sortDirections: ['descend', 'ascend']
+      sortDirections: ['descend', 'ascend'],
+      render: ((rate: number) => (
+        <span>
+              <Tag color={(rate>1) ? 'green' : (rate<1) ? 'red' : 'gray'} key={rate}>
+              {rate}
+              </Tag>
+        </span>
+      ))
     },
     {
       title: '7 Day Change',
@@ -237,7 +191,14 @@ export default function myTable (): ReactElement {
       key: '7 day change',
       width: '20%',
       sorter: (a, b) => a['7 day change'] - b['7 day change'],
-      sortDirections: ['descend', 'ascend']
+      sortDirections: ['descend', 'ascend'],
+      render: ((rate: number) => (
+        <span>
+              <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
+              {rate}
+              </Tag>
+        </span>
+      ))
     },
     {
       title: '1 Month Change',
@@ -245,7 +206,14 @@ export default function myTable (): ReactElement {
       key: '1 month change',
       width: '20%',
       sorter: (a, b) => a['1 month change'] - b['1 month change'],
-      sortDirections: ['descend', 'ascend']
+      sortDirections: ['descend', 'ascend'],
+      render: ((rate: number) => (
+        <span>
+              <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
+              {rate}
+              </Tag>
+        </span>
+      ))
     },
     {
       title: '1 Year Change',
@@ -253,7 +221,14 @@ export default function myTable (): ReactElement {
       key: '1 year change',
       width: '20%',
       sorter: (a, b) => a['1 year change'] - b['1 year change'],
-      sortDirections: ['descend', 'ascend']
+      sortDirections: ['descend', 'ascend'],
+      render: ((rate: number) => (
+        <span>
+              <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
+              {rate}
+              </Tag>
+        </span>
+      ))
     },
   ]
 
@@ -269,7 +244,7 @@ export default function myTable (): ReactElement {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
             </span>
         </div>
-        <Table pagination={{position: ["topRight"]}} columns={columns} dataSource={data} />
+        <Table sticky={true} pagination={{position: ["topRight"]}} columns={columns} dataSource={data} />
     </div>;
 };
 

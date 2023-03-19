@@ -46,11 +46,16 @@ export async function convert(amount: number, from: string, to: string, date?:st
 }
 
 
-export async function fluct(start_date: string, end_date: string, base?: string, symbols?: string[]) {
+export async function fluct(start_date: string, end_date: string, base?: string, symbolArray?: Array<Array<string>>) {
     
     const dateDiff = ((new Date(end_date).getTime() - new Date(start_date).getTime()) / (1000*3600*24));
 
     console.log(` The difference is: ${dateDiff}`);
+    let symbols: string[] | undefined;
+
+    if (symbolArray){
+        symbols = symbolArray.map(item => item[1])
+    }
 
     if (dateDiff <= 365){
         let url = `https://api.apilayer.com/exchangerates_data/fluctuation?start_date=${start_date}&end_date=${end_date}`;
@@ -75,12 +80,20 @@ export async function fluct(start_date: string, end_date: string, base?: string,
   }
 
 
-export async function latest(symbols?: string[], base?: string) : Promise<string>{
+export async function latest(symbolArray?: Array<Array<string>>, base?: string) : Promise<string>{
     
     let url = `${endpoint}/latest?`;
+
+    let symbols: string[] | undefined;
+
+    if (symbolArray){
+        symbols = symbolArray.map(item => item[1])
+    }
+
     if (base){
         url += `&base=${base}`
     }
+
     
     if (symbols){
         url += `&symbols=${symbols}`

@@ -28,8 +28,12 @@ interface COUNTRY {
 
 interface DataType {
   key: string;
-  flag: ReactElement
-  name: string;
+  name: {
+    countryCode: string,
+    currencySymbol: string,
+    currencyCode: string,
+    currencyName: string
+};
   rate: number;
   '7 day change': number;
   '1 month change': number;
@@ -50,7 +54,7 @@ function reduceCountries(countries: COUNTRY[]): SelectProps[]{
             countryName = 'European Euro'
             break;
         case 'USD':
-            countryCode = 'USA'
+            countryCode = 'US'
             countryName = 'United States Dollar'
             break;
       
@@ -88,23 +92,30 @@ export default function App(): ReactElement{
 
 useEffect(() => {
     const symbol: string | undefined = defValue.value;
-    getTableData(symbol as string).then((res: tableData[]) =>
-        setData(
-            res.map((data: tableData, index: number) => ({
-                key: index.toString(),
-                flag: (
-                    <img
-                        src={`https://flagsapi.com/:${data.name}/:shiny/:16.png`}
-                    />
-                ),
-                name: data.name,
-                rate: data.rates,
-                '7 day change': data.weekDiff,
-                '1 month change': data.monthDiff,
-                '1 year change': data.yearDiff,
-            }))
-        )
-    );
+    let oldData = localStorage.getItem('data');
+    if (!oldData || (oldData && !(symbol as string in JSON.parse(oldData)))){
+      getTableData(symbol as string).then((res: tableData[]) =>
+        {
+          let newData: DataType[] = res.map((data: tableData, index: number) => ({
+          key: index.toString(),
+          name: {
+            countryCode: data.name.countryCode,
+            currencyCode: data.name.currencyCode,
+            currencyName: data.name.currencyName,
+            currencySymbol: data.name.currencySymbol
+          },
+          rate: data.rates,
+          '7 day change': data.weekDiff,
+          '1 month change': data.monthDiff,
+          '1 year change': data.yearDiff,
+      }));
+      setData(newData);
+      localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
+    }
+      );
+    } else {
+      setData(JSON.parse(oldData)[symbol as string]);
+    }
 }, [defValue]);
 
 

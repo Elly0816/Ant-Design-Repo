@@ -4,15 +4,15 @@ import moment, { Moment } from 'moment';
 import { ReactElement } from 'react';
 
 
-function getSymbols(countries: any): string[]{
+function getSymbols(countries: any): Array<Array<string>>{
     const symbols = countries.map((country: any) => {
-        return country.currency.code
+        return [country.code, country.currency.code, country.currency.name]
     })
     return symbols;
 }
 
 export async function getTableData(base: string) : Promise<tableData[]>{
-    const symbols: string[] = getSymbols(COUNTRIES);
+    const symbols: Array<Array<string>> = getSymbols(COUNTRIES);
     let today: Moment | string = moment();
     const lastWeek = today.subtract(7, 'days').format().split('T')[0];
     const lastMonth = today.subtract(1, 'months').format().split('T')[0];
@@ -66,8 +66,19 @@ function mapToResult(rates: any, lastWeekF: any, lastMonthF: any, lastYearF:any)
     let yearRates = lastYearF.rates;
 
     let toReturn: tableData[] = Object.keys(currRates).map((key):tableData => {
+        let country = COUNTRIES.find((country) => country.currency.code === key);
+        let countryCode = !country? 'unknown' : country.currency.code === 'EUR' ? 'EU' : country.currency.code === 'USD' ? 'US' : country.code;
+        let currencySymbol = !country? 'unknown' : country.currency.symbol;
+        let currencyCode = !country? 'unknown' : country.currency.code;
+        let currencyName = !country? 'unknown' : country.currency.name;
+        
         return {
-            name: key,
+            name: {key: key, 
+                countryCode: countryCode,
+                currencyCode: currencyCode,
+                currencyName: currencyName,
+                currencySymbol: currencySymbol
+            },
             rates: currRates[key],
             weekDiff: weekRates[key].change_pct,
             monthDiff: monthRates[key].change_pct,
@@ -79,19 +90,25 @@ function mapToResult(rates: any, lastWeekF: any, lastMonthF: any, lastYearF:any)
 }
 
 export interface tableData {
-    name: string,
+    name: {
+        key: string,
+        countryCode: string,
+        currencySymbol: string,
+        currencyCode: string,
+        currencyName: string
+    },
     rates: number,
     weekDiff: number,
     monthDiff: number,
     yearDiff: number
 }
 
-interface DataType {
-    key: string;
-    flag: ReactElement
-    name: string;
-    rate: number;
-    '7 day change': number;
-    '1 month change': number;
-    '1 year change': number
-  }
+// interface DataType {
+//     key: string;
+//     flag: ReactElement
+//     name: string;
+//     rate: number;
+//     '7 day change': number;
+//     '1 month change': number;
+//     '1 year change': number
+//   }
