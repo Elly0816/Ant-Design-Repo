@@ -46,7 +46,7 @@ export async function convert(amount: number, from: string, to: string, date?:st
 }
 
 
-export async function fluct(start_date: string, end_date: string, base?: string, symbols?: string) {
+export async function fluct(start_date: string, end_date: string, base?: string, symbols?: string[]) {
     
     const dateDiff = ((new Date(end_date).getTime() - new Date(start_date).getTime()) / (1000*3600*24));
 

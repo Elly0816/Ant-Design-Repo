@@ -1,7 +1,10 @@
-.table-button-div {
-    position: absolute;
-    margin: 5px 20px;
-    right: 0;
+.buttons-above-table {
+    /* position: absolute; */
+    padding: 2% 0;
+    /* right: 0; */
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .table {

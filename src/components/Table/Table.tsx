@@ -1,4 +1,4 @@
-import { useRef, useState, ReactElement } from 'react';
+import { useRef, useState, ReactElement, useContext, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { InputRef } from 'antd';
 import { Button, Input, Space, Table } from 'antd';
@@ -8,52 +8,57 @@ import Highlighter from 'react-highlight-words';
 import myButton from '../Button/Button';
 import "./Table.css";
 import Mybutton from '../Button/Button';
+import { appContext } from '../../App';
+import { tableData } from '../../helpers/getTableData';
 
 interface DataType {
   key: string;
+  flag: ReactElement
   name: string;
-  age: number;
-  address: string;
+  rate: number;
+  '7 day change': number;
+  '1 month change': number;
+  '1 year change': number
 }
 
 type DataIndex = keyof DataType;
 
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Joe Black',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Jim Green',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
-  },
-];
+// const data: DataType[] = [
+//   {
+//     key: '1',
+//     name: 'John Brown',
+//     age: 32,
+//     address: 'New York No. 1 Lake Park',
+//   },
+//   {
+//     key: '2',
+//     name: 'Joe Black',
+//     age: 42,
+//     address: 'London No. 1 Lake Park',
+//   },
+//   {
+//     key: '3',
+//     name: 'Jim Green',
+//     age: 32,
+//     address: 'Sydney No. 1 Lake Park',
+//   },
+//   {
+//     key: '4',
+//     name: 'Jim Red',
+//     age: 32,
+//     address: 'London No. 2 Lake Park',
+//   },
+// ];
 
-for (let i=5; i< 50; i++){
-    const toAppend: DataType = {
-        key: (i).toString(),
-        name: `Joe${i} Simon${i+1}`,
-        age: i+20,
-        address: `Somwhere at street ${i}`
-    }
-    data.push(toAppend);
-}
+// for (let i=5; i< 50; i++){
+//     const toAppend: DataType = {
+//         key: (i).toString(),
+//         name: `Joe${i} Simon${i+1}`,
+//         age: i+20,
+//         address: `Somwhere at street ${i}`
+//     }
+//     data.push(toAppend);
+// }
 
 export default function myTable (): ReactElement {
   const [searchText, setSearchText] = useState('');
@@ -62,6 +67,16 @@ export default function myTable (): ReactElement {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const {data, defValue} : {data: DataType[], defValue: {
+    label: string;
+    value: string | undefined;
+}}= useContext(appContext);
+
+  const [tableData, setTableData] = useState<DataType[]>(data);
+
+
+  // const [data, setData] = useState<DataType[]>();
 
   const start = () => {
     setLoading(true);
@@ -175,37 +190,77 @@ export default function myTable (): ReactElement {
       ),
   });
 
+  // const columns: ColumnsType<DataType> = [
+  //   {
+  //     title: 'Name',
+  //     dataIndex: 'name',
+  //     key: 'name',
+  //     width: '30%',
+  //     ...getColumnSearchProps('name'),
+  //   },
+  //   {
+  //     title: 'Age',
+  //     dataIndex: 'age',
+  //     key: 'age',
+  //     width: '20%',
+  //     ...getColumnSearchProps('age'),
+  //   },
+  //   {
+  //     title: 'Address',
+  //     dataIndex: 'address',
+  //     key: 'address',
+  //     ...getColumnSearchProps('address'),
+  //     sorter: (a, b) => a.address.length - b.address.length,
+  //     sortDirections: ['descend', 'ascend'],
+  //   },
+  // ];
+
   const columns: ColumnsType<DataType> = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
       width: '30%',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps('name')
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
+      title: 'Rate',
+      dataIndex: 'rate',
+      key: 'rate',
       width: '20%',
-      ...getColumnSearchProps('age'),
+      sorter: (a, b) => a.rate - b.rate,
+      sortDirections: ['descend', 'ascend']
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      ...getColumnSearchProps('address'),
-      sorter: (a, b) => a.address.length - b.address.length,
-      sortDirections: ['descend', 'ascend'],
+      title: '7 Day Change',
+      dataIndex: '7 day change',
+      key: '7 day change',
+      width: '20%',
+      sorter: (a, b) => a['7 day change'] - b['7 day change'],
+      sortDirections: ['descend', 'ascend']
     },
-  ];
+    {
+      title: '1 Month Change',
+      dataIndex: '1 month change',
+      key: '1 month change',
+      width: '20%',
+      sorter: (a, b) => a['1 month change'] - b['1 month change'],
+      sortDirections: ['descend', 'ascend']
+    },
+    {
+      title: '1 Year Change',
+      dataIndex: '1 year change',
+      key: '1 year change',
+      width: '20%',
+      sorter: (a, b) => a['1 year change'] - b['1 year change'],
+      sortDirections: ['descend', 'ascend']
+    },
+  ]
 
   return <div className='table'>
         <div style={{ marginBottom: 16 }}>
-            <div className='picker'>
+            <div className="buttons-above-table">
                 <Mybutton/>
-            </div>
-            <div className="table-button-div">
                 <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
                     {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
                 </Button>
@@ -214,7 +269,7 @@ export default function myTable (): ReactElement {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
             </span>
         </div>
-        <Table columns={columns} dataSource={data} />
+        <Table pagination={{position: ["topRight"]}} columns={columns} dataSource={data} />
     </div>;
 };
 
