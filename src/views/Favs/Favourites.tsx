@@ -4,7 +4,8 @@ import Header from '../../components/Header/Header';
 
 
 
-export default function Home(): ReactElement {
+
+export default function Favs(): ReactElement {
 
 
 

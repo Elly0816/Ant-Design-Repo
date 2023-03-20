@@ -1,6 +1,6 @@
 .buttons-above-table {
     /* position: absolute; */
-    padding: 2% 0;
+    padding: 2% 0 0 0;
     /* right: 0; */
     display: flex;
     justify-content: space-between;
@@ -8,7 +8,12 @@
 }
 
 .table {
-    color: white
+    color: white;
+    max-width: 90vw;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    margin: auto;
+    margin-top: 0;
 }
-
-.picker {}

@@ -14,6 +14,7 @@ function getSymbols(countries: any): Array<Array<string>>{
 export async function getTableData(base: string) : Promise<tableData[]>{
     const symbols: Array<Array<string>> = getSymbols(COUNTRIES);
     let today: Moment | string = moment();
+    const yesterday = today.subtract(24, 'hours').format().split('T')[0];
     const lastWeek = today.subtract(7, 'days').format().split('T')[0];
     const lastMonth = today.subtract(1, 'months').format().split('T')[0];
     const lastYear = today.subtract(1, 'years').format().split('T')[0];
@@ -24,15 +25,16 @@ export async function getTableData(base: string) : Promise<tableData[]>{
     // });
 
     try {
-        let [rates, lastWeekF, lastMonthF, lastYearF] = await Promise.all([
+        let [rates, yesterdayF, lastWeekF, lastMonthF, lastYearF] = await Promise.all([
             latest(symbols, base),
+            fluct(today, yesterday, base, symbols),
             fluct(today, lastWeek, base, symbols),
             fluct(today, lastMonth, base, symbols),
             fluct(today, lastYear, base, symbols),
         ]);
 
-        console.log(mapToResult(rates, lastWeekF, lastMonthF, lastYearF));
-        result = mapToResult(rates, lastWeekF, lastMonthF, lastYearF);
+        console.log(mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF));
+        result = mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF);
         return result;
         
     } catch (err){
@@ -58,9 +60,10 @@ export async function getTableData(base: string) : Promise<tableData[]>{
 }
 
 
-function mapToResult(rates: any, lastWeekF: any, lastMonthF: any, lastYearF:any): tableData[]{
+function mapToResult(rates: any, yesterday: any, lastWeekF: any, lastMonthF: any, lastYearF:any): tableData[]{
 
     let currRates = rates.rates;
+    let hours24 = yesterday.rates;
     let weekRates = lastWeekF.rates;
     let monthRates = lastMonthF.rates;
     let yearRates = lastYearF.rates;
@@ -80,6 +83,7 @@ function mapToResult(rates: any, lastWeekF: any, lastMonthF: any, lastYearF:any)
                 currencySymbol: currencySymbol
             },
             rates: currRates[key],
+            hours24Diff: hours24[key].change_pct,
             weekDiff: weekRates[key].change_pct,
             monthDiff: monthRates[key].change_pct,
             yearDiff: yearRates[key].change_pct
@@ -98,6 +102,7 @@ export interface tableData {
         currencyName: string
     },
     rates: number,
+    hours24Diff: number,
     weekDiff: number,
     monthDiff: number,
     yearDiff: number

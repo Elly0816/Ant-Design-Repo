@@ -1,10 +1,25 @@
 import {Fragment, ReactElement, useState, useEffect, createContext, useMemo, useCallback} from 'react';
 import Header from './components/Header/Header'
 import Home from './views/Home/Home';
+import Favs from './views/Favs/Favourites';
 import { COUNTRIES } from './helpers/countries';
 import { RATES } from './helpers/currencies';
 import { SelectProps } from 'antd';
 import { getTableData, tableData } from './helpers/getTableData';
+import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+
+const router = createBrowserRouter([
+  {
+    path: "/", 
+    element: <Home/>
+  },
+  {
+    path: "/favorites",
+    element: <Favs/>
+  }
+])
 
 
 interface COUNTRY {
@@ -35,6 +50,7 @@ interface DataType {
     currencyName: string
 };
   rate: number;
+  '24 hour change': number;
   '7 day change': number;
   '1 month change': number;
   '1 year change': number
@@ -90,6 +106,8 @@ export default function App(): ReactElement{
 
   const [data, setData] = useState<DataType[] | undefined>();
 
+  const [loading, setLoading] = useState<boolean>(true);
+
 useEffect(() => {
     const symbol: string | undefined = defValue.value;
     let oldData = localStorage.getItem('data');
@@ -105,25 +123,32 @@ useEffect(() => {
             currencySymbol: data.name.currencySymbol
           },
           rate: data.rates,
+          '24 hour change': data.hours24Diff,
           '7 day change': data.weekDiff,
           '1 month change': data.monthDiff,
           '1 year change': data.yearDiff,
       }));
       setData(newData);
+      setLoading(false);
       localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
     }
       );
     } else {
-      setData(JSON.parse(oldData)[symbol as string]);
+      let timer = setTimeout(() => {
+        setData(JSON.parse(oldData as string)[symbol as string]);
+        setLoading(false);    
+      }, 1500);
+      return () => clearTimeout(timer);
     }
 }, [defValue]);
 
 
   return (
-    <appContext.Provider value={{countriesToShow, defValue, setDefValue, data}}>
+    <appContext.Provider value={{countriesToShow, defValue, setDefValue, data, loading, setLoading}}>
       <Fragment>
-          <Header/>
-          <Home/>
+          {/* <Header/> */}
+          <RouterProvider router={router}/>
+          {/* <Home/> */}
       </Fragment>
     </appContext.Provider>
       )

@@ -9,6 +9,7 @@ import "./Table.css";
 import Mybutton from '../Button/Button';
 import { appContext } from '../../App';
 import { tableData } from '../../helpers/getTableData';
+import Loading from '../Loading/Loading';
 
 interface DataType {
   key: string;
@@ -19,6 +20,7 @@ interface DataType {
     currencyName: string
 };
   rate: number;
+  '24 hour change': number;
   '7 day change': number;
   '1 month change': number;
   '1 year change': number
@@ -33,12 +35,14 @@ export default function myTable (): ReactElement {
   const searchInput = useRef<InputRef>(null);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
-  const {data, defValue} : {data: DataType[], defValue: {
+  const {data, defValue, loading, setLoading} : {data: DataType[], defValue: {
     label: string;
-    value: string | undefined;
-}}= useContext(appContext);
+    value: string | undefined},
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+}= useContext(appContext);
 
   const [tableData, setTableData] = useState<DataType[]>(data);
 
@@ -134,17 +138,9 @@ export default function myTable (): ReactElement {
     filterIcon: (filtered: boolean) => (
       <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
     ),
-    // onFilter: (value, record) =>
-    //   record[dataIndex]
-    //     .toString()
-    //     .toLowerCase()
-    //     .includes((value as string).toLowerCase()),
     onFilter: (value, record): boolean => {
       if (typeof value === 'string'){
         const name = record[dataIndex] as {currencyName: string, currencyCode: string};
-        const regex = new RegExp(value, 'i');
-
-        // return (regex.test(name.currencyCode) || regex.test(name.currencyName));
         return (name.currencyName.toLowerCase().includes(value.toLowerCase()) || 
           name.currencyCode.toLowerCase().includes(value.toLowerCase()));
       }
@@ -201,6 +197,21 @@ export default function myTable (): ReactElement {
       ))
     },
     {
+      title: '24 hour change',
+      dataIndex: '24 hour change',
+      key: '24 hour change',
+      width: '20%',
+      sorter: (a, b) => a['24 hour change'] - b['24 hour change'],
+      sortDirections: ['descend', 'ascend'],
+      render: ((rate: number) => (
+        <span>
+              <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
+              {rate}%
+              </Tag>
+        </span>
+      ))
+    },
+    {
       title: '7 Day Change',
       dataIndex: '7 day change',
       key: '7 day change',
@@ -210,7 +221,7 @@ export default function myTable (): ReactElement {
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
-              {rate}
+              {rate}%
               </Tag>
         </span>
       ))
@@ -225,7 +236,7 @@ export default function myTable (): ReactElement {
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
-              {rate}
+              {rate}%
               </Tag>
         </span>
       ))
@@ -240,7 +251,7 @@ export default function myTable (): ReactElement {
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
-              {rate}
+              {rate}%
               </Tag>
         </span>
       ))
@@ -259,7 +270,9 @@ export default function myTable (): ReactElement {
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
             </span>
         </div>
-        <Table sticky={true} pagination={{position: ["topRight"]}} columns={columns} dataSource={data} />
+        {!loading?
+         <Table scroll={{x:true, y:550}} size='small' sticky={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} />
+        : <Loading/>}
     </div>;
 };
 
