@@ -1,4 +1,4 @@
-import {CSSProperties, MouseEvent, ReactElement, useState} from 'react';
+import {CSSProperties, MouseEvent, ReactElement, useState, useContext} from 'react';
 // import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,69 +8,16 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { Button, SxProps, Theme } from '@mui/material';
 import {Link} from 'react-router-dom';
+import { appContext } from '../../App';
 
 
 
-// interface Pages {
-//     text: string,
-//     link: string,
-// }
-
-// const pages: Pages[] = [
-//     {text: "Currencies", link: "/"},
-//     {text: "Favorites", link: "/favorites"}];
-
-// const Search = styler('div')(({ theme }) => ({
-//   display: 'flex',
-//   flexDirection: 'row-reverse',
-//   position: 'relative',
-//   borderRadius: theme.shape.borderRadius,
-//   backgroundColor: alpha(theme.palette.common.white, 0.15),
-//   '&:hover': {
-//     backgroundColor: alpha(theme.palette.common.white, 0.25),
-//   },
-//   marginRight: theme.spacing(2),
-//   marginLeft: 0,
-//   width: '100%',
-//   [theme.breakpoints.up('sm')]: {
-//     marginLeft: theme.spacing(5),
-//     width: '32%',
-//   },
-// }));
-
-// const SearchIconWrapper = styler('div')(({ theme }) => ({
-//   padding: theme.spacing(0, 2),
-//   height: '100%',
-//   position: 'absolute',
-//   pointerEvents: 'none',
-//   display: 'flex',
-//   alignItems: 'center',
-//   justifyContent: 'center',
-// }));
-
-// const StyledInputBase = styler(InputBase)(({ theme }) => ({
-//   color: 'inherit',
-//   '& .MuiInputBase-input': {
-//     padding: theme.spacing(1, 1, 1, 0),
-//     // vertical padding + font size from searchIcon
-//     paddingLeft: `calc(1em + ${theme.spacing(1)})`,
-//     transition: theme.transitions.create('width'),
-//     width: '100%',
-//     [theme.breakpoints.up('md')]: {
-//       width: '20ch',
-//     },
-//   },
-// }));
 
 const appBar: SxProps<Theme> = {
   backgroundColor: "white",
   color: "black"
 }
 
-// const inputStyle: SxProps<Theme> = {
-//   backgroundColor: "#c5c6d0",
-//   borderRadius: "50px"
-// }
 
 const mainStyling: SxProps<Theme> = {
   width: "100vw"
@@ -104,8 +51,16 @@ const linkProps: CSSProperties = {
                                 };
 
 
+
 export default function PrimarySearchAppBar(): ReactElement {
-    return (
+
+  const {view, setView, getFavData} : {view: 'currencies' | 'favorites',
+   setView: React.Dispatch<React.SetStateAction<"currencies" | "favorites">>,
+  getFavData: () => void} = useContext(appContext);
+
+
+
+  return (
                 <Box sx={mainStyling}>
             <AppBar sx={appBar} position="relative">
                 <Toolbar>
@@ -119,7 +74,11 @@ export default function PrimarySearchAppBar(): ReactElement {
                 </Typography>
                 <Box sx={buttonBoxProps}>
                       <Link style={linkProps} to='/' relative='path'>                        
-                      <Button sx={buttonProps}>
+                      <Button sx={buttonProps} onClick={() => {
+                        if (view !== 'currencies'){
+                          setView('currencies');
+                        }
+                      }}>
                         <img src="./images/exchange.png" alt="exchange" />
                         <span style={{marginLeft: '5%'}}>
                           CURRENCIES
@@ -127,7 +86,12 @@ export default function PrimarySearchAppBar(): ReactElement {
                      </Button>
                       </Link>                  
                       <Link style={linkProps} to='/favorites' relative='path'>                        
-                      <Button sx={buttonProps}>
+                      <Button sx={buttonProps} onClick={() => {
+                        if (view !== 'favorites'){
+                          setView('favorites')
+                          getFavData();
+                        }
+                      }}>
                         <img src="./images/red-heart.png" alt="red-heart" />
                         <span style={{marginLeft: '5%'}}>
                           FAVORITES

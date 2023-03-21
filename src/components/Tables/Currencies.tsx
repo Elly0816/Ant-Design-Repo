@@ -1,14 +1,14 @@
-import { useRef, useState, ReactElement, useContext, useEffect } from 'react';
+import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, InputRef, Tag } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
-import myButton from '../Button/Button';
+// import myButton from '../Button/Button';
 import "./Table.css";
 import Mybutton from '../Button/Button';
 import { appContext } from '../../App';
-import { tableData } from '../../helpers/getTableData';
+// import { tableData } from '../../helpers/getTableData';
 import Loading from '../Loading/Loading';
 
 interface DataType {
@@ -36,15 +36,19 @@ export default function myTable (): ReactElement {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   // const [loading, setLoading] = useState(false);
+  
 
-  const {data, defValue, loading, setLoading} : {data: DataType[], defValue: {
-    label: string;
-    value: string | undefined},
+  const {data, loading, setLoading, favorites, editFavorites} : {
+    data: DataType[],
     loading: boolean;
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    favorites: string[],
+    editFavorites: (code: string) => void,
 }= useContext(appContext);
 
-  const [tableData, setTableData] = useState<DataType[]>(data);
+  // const [tableData, setTableData] = useState<DataType[]>(data);
+  
+
 
 
   // const [data, setData] = useState<DataType[]>();
@@ -164,28 +168,49 @@ export default function myTable (): ReactElement {
       ),
   });
 
+  const nameStyle: CSSProperties = {
+    display: 'flex',
+    // justifyContent: 'space-evenly'
+  }
+
+  const imageStyle: CSSProperties = {
+    marginRight: '5%'
+  }
+
+
 
   const columns: ColumnsType<DataType> = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'key',
-      width: '30%',
+      width: '15%',
       ...getColumnSearchProps('name'),
       render: ((name: {countryCode: string, currencyName: string, currencySymbol: string, currencyCode: string}) => 
-      <div title={name.currencyCode}>
-        <span>{name.currencySymbol}</span>
-        <br />
-        <img alt={name.currencyName} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
-        <br />
-        <span>{name.currencyName}</span>
+      <div style={nameStyle} title={`${name.currencyName}`}>
+        <div className='name-image' onClick={() => {
+          editFavorites(name.currencyCode);
+          }}>
+          {(favorites.includes(name.currencyCode))?
+          <img title={`Remove ${name.currencyCode} from favorites`} src='./images/red-heart.png' alt='red-heart'/> 
+          :
+           <img title={`Add ${name.currencyCode} to favorites`} src='./images/black-heart.png' alt='black-heart'/>}
+        </div>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          {/* <span>{name.currencySymbol}</span> */}
+          <br />
+          <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+          <br />
+          <span>{name.currencyCode}</span>
+          {/* <span>{name.currencyCode}</span> */}
+        </div>
       </div>)
     },
     {
       title: 'Rate',
       dataIndex: 'rate',
       key: 'rate',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => a.rate - b.rate,
       sortDirections: ['descend', 'ascend'],
       render: ((rate: number) => (
@@ -200,7 +225,7 @@ export default function myTable (): ReactElement {
       title: '24 hour change',
       dataIndex: '24 hour change',
       key: '24 hour change',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => a['24 hour change'] - b['24 hour change'],
       sortDirections: ['descend', 'ascend'],
       render: ((rate: number) => (
@@ -215,7 +240,7 @@ export default function myTable (): ReactElement {
       title: '7 Day Change',
       dataIndex: '7 day change',
       key: '7 day change',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => a['7 day change'] - b['7 day change'],
       sortDirections: ['descend', 'ascend'],
       render: ((rate: number) => (
@@ -230,7 +255,7 @@ export default function myTable (): ReactElement {
       title: '1 Month Change',
       dataIndex: '1 month change',
       key: '1 month change',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => a['1 month change'] - b['1 month change'],
       sortDirections: ['descend', 'ascend'],
       render: ((rate: number) => (
@@ -245,7 +270,7 @@ export default function myTable (): ReactElement {
       title: '1 Year Change',
       dataIndex: '1 year change',
       key: '1 year change',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => a['1 year change'] - b['1 year change'],
       sortDirections: ['descend', 'ascend'],
       render: ((rate: number) => (
@@ -271,7 +296,7 @@ export default function myTable (): ReactElement {
             </span>
         </div>
         {!loading?
-         <Table scroll={{x:true, y:550}} size='small' sticky={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} />
+         <Table scroll={{x:true, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}/>
         : <Loading/>}
     </div>;
 };

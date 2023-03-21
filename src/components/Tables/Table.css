@@ -17,3 +17,14 @@
     margin: auto;
     margin-top: 0;
 }
+
+.name-image :hover {
+    cursor: pointer;
+    left: 0;
+    position: relative;
+}
+
+.name-image {
+    margin-right: 20%;
+    left: 0;
+}

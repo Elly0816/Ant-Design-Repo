@@ -170,7 +170,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "ARS",
             "name": "Argentine peso",
-            "symbol": "$"
+            "symbol": "Arg$"
         },
         "language": {
             "code": "es",
@@ -186,7 +186,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "AMD",
             "name": "Armenian dram",
-            "symbol": ""
+            "symbol": "֏"
         },
         "language": {
             "code": "hy",
@@ -250,7 +250,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "AZN",
             "name": "Azerbaijani manat",
-            "symbol": ""
+            "symbol": "₼"
         },
         "language": {
             "code": "az",
@@ -458,7 +458,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "BAM",
             "name": "Bosnia and Herzegovina convertible mark",
-            "symbol": ""
+            "symbol": "KM"
         },
         "language": {
             "code": "bs",
@@ -1892,7 +1892,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "KZT",
             "name": "Kazakhstani tenge",
-            "symbol": ""
+            "symbol": "₸"
         },
         "language": {
             "code": "kk",
@@ -3704,7 +3704,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "TRY",
             "name": "Turkish lira",
-            "symbol": ""
+            "symbol": "₺"
         },
         "language": {
             "code": "tr",
@@ -3866,7 +3866,7 @@ export const COUNTRIES: COUNTRY[] = [
         "currency": {
             "code": "UZS",
             "name": "Uzbekistani so'm",
-            "symbol": ""
+            "symbol": "лв"
         },
         "language": {
             "code": "uz",
