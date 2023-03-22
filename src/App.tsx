@@ -126,6 +126,7 @@ export default function App(): ReactElement{
   const [favData, setFavData] = useState<DataType[] | undefined>();
 
 useEffect(() => {
+    setLoading(true);
     const symbol: string | undefined = defValue.value;
     let oldData = localStorage.getItem('data');
     getFavorites(); //Gets the 
