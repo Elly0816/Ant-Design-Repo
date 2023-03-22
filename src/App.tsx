@@ -1,35 +1,32 @@
-import {Fragment, ReactElement, useState, useEffect, createContext, useMemo, useCallback} from 'react';
-import Header from './components/Header/Header'
-import Home from './views/Home/Home';
-import Favs from './views/Favs/Favourites';
+import {Fragment, ReactElement, useState, useEffect, createContext, useMemo, Suspense, lazy} from 'react';
 import { COUNTRIES } from './helpers/countries';
-import { RATES } from './helpers/currencies';
 import { SelectProps } from 'antd';
 import { getTableData, tableData } from './helpers/getTableData';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, useRouteError } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
-import Error from './components/Error/Error';
+import Loading from './components/Loading/Loading';
 
 
-function ErrorBoundary() {
-  let error = useRouteError();
-  return
-}
+const Home = lazy(() => import('./views/Home/Home'));
+const Favs = lazy(() => import('./views/Favs/Favourites'));
+const Error = lazy(() => import('./components/Error/Error'));
 
 
-const router = createBrowserRouter([
-  {
-    path: "/", 
-    element: <Home/>,
-    errorElement: <Error/>
-  },
-  {
-    path: "/favorites",
-    element: <Favs/>,
-    errorElement: <Error/>
-  }
-])
+
+// const router = createBrowserRouter([
+//   {
+//     path: "/", 
+//     element: <Home/>,
+//     errorElement: <Error/>
+//     Suspense: <Suspense/>
+//   },
+//   {
+//     path: "/favorites",
+//     element: <Favs/>,
+//     errorElement: <Error/>
+//   }
+// ])
 
 
 interface COUNTRY {
@@ -226,9 +223,14 @@ function getFavData(): void{
   return (
     <appContext.Provider value={{getData, favData, getFavData, favorites, editFavorites, view, setView, countriesToShow, defValue, setDefValue, data, loading, setLoading}}>
       <Fragment>
-          {/* <Header/> */}
-          <RouterProvider router={router}/>
-          {/* <Home/> */}
+            <Router>
+              <Suspense fallback={<Loading/>}>
+                <Routes>
+                  <Route path='/' Component={Home}/>
+                  <Route path='/favorites' Component={Favs}/>
+                </Routes>
+              </Suspense>
+            </Router>
       </Fragment>
     </appContext.Provider>
       )
