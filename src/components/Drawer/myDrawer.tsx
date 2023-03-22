@@ -33,6 +33,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
       const onClose = () => {
         setOpen(false);
         openDrawer(false);
+        setAvg(undefined);
       };
 
       
