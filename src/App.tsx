@@ -7,18 +7,27 @@ import { RATES } from './helpers/currencies';
 import { SelectProps } from 'antd';
 import { getTableData, tableData } from './helpers/getTableData';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useRouteError } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
+import Error from './components/Error/Error';
+
+
+function ErrorBoundary() {
+  let error = useRouteError();
+  return
+}
 
 
 const router = createBrowserRouter([
   {
     path: "/", 
-    element: <Home/>
+    element: <Home/>,
+    errorElement: <Error/>
   },
   {
     path: "/favorites",
-    element: <Favs/>
+    element: <Favs/>,
+    errorElement: <Error/>
   }
 ])
 
@@ -215,7 +224,7 @@ function getFavData(): void{
 
 
   return (
-    <appContext.Provider value={{favData, getFavData, favorites, editFavorites, view, setView, countriesToShow, defValue, setDefValue, data, loading, setLoading}}>
+    <appContext.Provider value={{getData, favData, getFavData, favorites, editFavorites, view, setView, countriesToShow, defValue, setDefValue, data, loading, setLoading}}>
       <Fragment>
           {/* <Header/> */}
           <RouterProvider router={router}/>

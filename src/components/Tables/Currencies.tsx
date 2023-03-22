@@ -46,13 +46,14 @@ export default function myTable (): ReactElement {
  
   
 
-  const {data, loading, setLoading, favorites, editFavorites, defValue} : {
+  const {data, loading, setLoading, favorites, editFavorites, defValue, getData} : {
     data: DataType[],
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     favorites: string[],
     editFavorites: (code: string) => void,
-    defValue: {label: string, value: string|undefined}
+    defValue: {label: string, value: string|undefined},
+    getData: (data: string) => void
 }= useContext(appContext);
 
   // const [tableData, setTableData] = useState<DataType[]>(data);
@@ -65,6 +66,7 @@ export default function myTable (): ReactElement {
   const start = () => {
     setLoading(true);
     // ajax request after empty completing
+    getData(defValue.value as string);
     setTimeout(() => {
       setSelectedRowKeys([]);
       setLoading(false);
@@ -222,6 +224,23 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a.rate - b.rate,
       sortDirections: ['descend', 'ascend'],
+      filters: [
+        {
+          text: 'Less than 1',
+          value: '<1',
+        },
+        {
+          text: 'Greater than 1',
+          value: '>1',
+        },
+      ],
+      onFilter: (value: any, record) => {
+        if (value[0] === '>'){
+          return record.rate > parseInt(value.slice(1)) as boolean;
+        } 
+        else return record.rate < parseInt(value.slice(1)) as boolean;
+      },
+      filterSearch: true,
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>1) ? 'green' : (rate<1) ? 'red' : 'gray'} key={rate}>
@@ -237,6 +256,31 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a['24 hour change'] - b['24 hour change'],
       sortDirections: ['descend', 'ascend'],
+      filters: [
+        {
+          text: 'Less than -1',
+          value: '< -1',
+        },
+        {
+          text: 'Greater than -5',
+          value: '> -5',
+        },
+        {
+          text: 'Greater than 5',
+          value: '< 5',
+        },
+        {
+          text: 'Greater than 1',
+          value: '> 1',
+        },
+      ],
+      onFilter: (value: any, record) => {
+        if (value[0] === '>'){
+          return record['24 hour change'] > parseInt(value.split(' ')[1]) as boolean;
+        } 
+        else return record['24 hour change'] < parseInt(value.split(' ')[1]) as boolean;
+      },
+      filterSearch: true,
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
@@ -252,6 +296,31 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a['7 day change'] - b['7 day change'],
       sortDirections: ['descend', 'ascend'],
+      filters: [
+        {
+          text: 'Less than 1',
+          value: '< 1',
+        },
+        {
+          text: 'Greater than 0',
+          value: '> 0',
+        },
+        {
+          text: 'Less than 0',
+          value: '< 0',
+        },
+        {
+          text: 'Greater than 1',
+          value: '> 1',
+        },
+      ],
+      onFilter: (value: any, record) => {
+        if (value[0] === '>'){
+          return record['7 day change'] > parseInt(value.split(' ')[1]) as boolean;
+        } 
+        else return record['7 day change'] < parseInt(value.split(' ')[1]) as boolean;
+      },
+      filterSearch: true,
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
@@ -267,6 +336,31 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a['1 month change'] - b['1 month change'],
       sortDirections: ['descend', 'ascend'],
+      filters: [
+        {
+          text: 'Less than 1',
+          value: '< 1',
+        },
+        {
+          text: 'Greater than 0',
+          value: '> 0',
+        },
+        {
+          text: 'Less than 0',
+          value: '< 0',
+        },
+        {
+          text: 'Greater than 1',
+          value: '> 1',
+        },
+      ],
+      onFilter: (value: any, record) => {
+        if (value[0] === '>'){
+          return record['1 month change'] > parseInt(value.split(' ')[1]) as boolean;
+        } 
+        else return record['1 month change'] < parseInt(value.split(' ')[1]) as boolean;
+      },
+      filterSearch: true,
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
@@ -282,6 +376,31 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a['1 year change'] - b['1 year change'],
       sortDirections: ['descend', 'ascend'],
+      filters: [
+        {
+          text: 'Less than 1',
+          value: '< 1',
+        },
+        {
+          text: 'Greater than 0',
+          value: '> 0',
+        },
+        {
+          text: 'Less than 0',
+          value: '< 0',
+        },
+        {
+          text: 'Greater than 1',
+          value: '> 1',
+        },
+      ],
+      onFilter: (value: any, record) => {
+        if (value[0] === '>'){
+          return record['1 year change'] > parseInt(value.split(' ')[1]) as boolean;
+        } 
+        else return record['1 year change'] < parseInt(value.split(' ')[1]) as boolean;
+      },
+      filterSearch: true,
       render: ((rate: number) => (
         <span>
               <Tag color={(rate>0) ? 'green' : (rate<0) ? 'red' : 'gray'} key={rate}>
@@ -297,7 +416,7 @@ export default function myTable (): ReactElement {
       fixed: 'right',
       width: '15%',
       render: ((name: {currencyCode: string, currencyName: string}) => name.currencyName !== defValue.value && (
-      <Button onClick={() => {
+      <Button title={`Show ${name.currencyName} Details`} onClick={() => {
         setOpenDrawer(true);
         setDetail({name: name.currencyName, code: name.currencyCode});
         // getDetails(defValue, name.currencyName)
