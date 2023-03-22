@@ -9,3 +9,9 @@
 .drawer{
     display: flex;
 } */
+
+@media only screen and (max-width: 600px) {
+    .loading-details {
+        width: 50vw;
+    }
+}

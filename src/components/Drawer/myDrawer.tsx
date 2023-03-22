@@ -105,8 +105,10 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
       <div className='details'>  
         <Stats max={max as Data} min={min as Data} avg={avg as number} curr={details?.code as string} base={defValue.value as string}/>
       </div>
-      : 
-      <Loading/>
+      :
+      <div className="loading-details">
+        <Loading/>
+      </div> 
       }
     </Drawer>
     </div>
