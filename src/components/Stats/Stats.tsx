@@ -27,19 +27,19 @@ export default function Stats ({max, min, avg, curr, base}: {max:Data, min:Data,
                     precision={2}
                     valueStyle={{ color: '#3f8600' }}
                     prefix={<ArrowUpOutlined />}
-                    suffix="%"
+                    suffix={` ${curr} was Equal to 1 ${base}`}
                     />
                 </Card>
                 </Col>
                 <Col span={12}>
                 <Card bordered={false}>
                     <Statistic
-                    title={`Max on ${min[0]}`}
+                    title={`Min on ${min[0]}`}
                     value={min[1][curr]}
                     precision={2}
                     valueStyle={{ color: '#cf1322' }}
                     prefix={<ArrowDownOutlined />}
-                    suffix="%"
+                    suffix={` ${curr} was Equal to 1 ${base}`}
                     />
                 </Card>
                 </Col>
@@ -53,7 +53,7 @@ export default function Stats ({max, min, avg, curr, base}: {max:Data, min:Data,
                         precision={2}
                         valueStyle={{ color: '#3f8600' }}
                         prefix={<ArrowsAltOutlined />}
-                        suffix="%"
+                        suffix={` ${curr} was Equal to 1 ${base}`}
                         />
                     </Card>
                 </Col>
