@@ -19,7 +19,9 @@ const appBar: SxProps<Theme> = {
 
 
 const mainStyling: SxProps<Theme> = {
-  width: "100vw"
+  width: "100vw",
+  display: 'flex',
+  justifyContent: 'space-around',
 }
 
 const buttonProps: SxProps<Theme> = { 
@@ -47,9 +49,11 @@ const buttonBoxProps: SxProps<Theme> = {
   flexGrow: 1,
   display: { xs: 'flex', md: 'flex' },
   justifyContent: ['space between'],
-  marginLeft: '20%',
+  // marginLeft: '20%',
   paddingLeft: {md: '20px'},
   fontWeight: 'bolder',
+  position: 'absolute',
+  right: '10%',
 }
 
 // const buttonActiveProps: SxProps<Theme> = {
