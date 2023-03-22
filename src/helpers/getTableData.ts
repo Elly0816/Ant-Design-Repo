@@ -12,6 +12,10 @@ function getSymbols(countries: any): Array<Array<string>>{
 }
 
 export async function getTableData(base: string) : Promise<tableData[]>{
+    /*
+        This gets the latest rates and the changes over the past day, week, month and year.
+
+    */
     const symbols: Array<Array<string>> = getSymbols(COUNTRIES);
     let today: Moment | string = moment();
     const yesterday = today.subtract(24, 'hours').format().split('T')[0];
@@ -61,6 +65,11 @@ export async function getTableData(base: string) : Promise<tableData[]>{
 
 
 export async function getDetails(base:string, symbol:string): Promise<object>{
+
+    /*
+        This gets the details of the symbol passed into it
+    */
+
     let today: Moment | string = moment();
     const lastYear = today.subtract(1, 'years').format().split('T')[0];
     today = moment().format().split('T')[0];
@@ -73,6 +82,9 @@ export async function getDetails(base:string, symbol:string): Promise<object>{
 
 
 function mapToResult(rates: any, yesterday: any, lastWeekF: any, lastMonthF: any, lastYearF:any): tableData[]{
+    /*
+        This maps the response of the api to the interface tableData
+    */
 
     let currRates = rates.rates;
     let hours24 = yesterday.rates;

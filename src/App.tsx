@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
+// import Error from './components/Error/Error';
 
 
 const Home = lazy(() => import('./views/Home/Home'));
@@ -65,7 +66,10 @@ interface DataType {
 
 
 function reduceCountries(countries: COUNTRY[]): SelectProps[]{
-
+/*
+  This converts the array of country details to an array of 
+  SelectProps
+*/
   const newItem: SelectProps[] = countries.reduce((arr:SelectProps[] , country: COUNTRY) => {
     if (!arr.some(item => item?.id === country.currency.code)) {
       let countryCode: string;
@@ -124,7 +128,7 @@ export default function App(): ReactElement{
 useEffect(() => {
     const symbol: string | undefined = defValue.value;
     let oldData = localStorage.getItem('data');
-    getFavorites();
+    getFavorites(); //Gets the 
     if (!oldData || (oldData && !(symbol as string in JSON.parse(oldData)))){
       getData(symbol as string);
     } else {
@@ -143,6 +147,10 @@ useEffect(()=> {
 }, [favorites]);
 
 function getData(symbol: string): void{
+  /*
+    This gets the data by calling the function below
+    The response of the function is mapped to the DataType type for use in the whole app
+  */
   getTableData(symbol as string).then((res: tableData[]) =>
         {
           let newData: DataType[] = res.map((data: tableData, index: number) => ({
@@ -168,6 +176,10 @@ function getData(symbol: string): void{
 
 
 function editFavorites(currencyCode: string): void{
+  /*
+    This adds and removes the country code to the local storage.
+    This also updates the favorite state by calling getFavorites()
+  */
   let favoritesString = localStorage.getItem("favorites");
   if (favoritesString) {
     let favorites = JSON.parse(favoritesString);
@@ -190,13 +202,17 @@ function editFavorites(currencyCode: string): void{
 
 
 function getFavorites(): void{
+
+  /*
+    Sets the favorite state to an array of strings
+    The array of string is gotten fron the local storage
+    If there are no favorites in the local storage, the favorites is set to an empty array
+  
+  */
   let favsFromStorage: string | null | {codes: string} = localStorage.getItem('favorites');
   if (favsFromStorage){
     console.log(favsFromStorage);
     let favorites: {codes: string[]} = JSON.parse(favsFromStorage);
-    // const favCurr = data?.filter(item => {
-    //   favorites.codes.includes(item.name.currencyCode)
-    // })
     setFavorites(favorites.codes);
   } else {
     setFavorites([]);
@@ -204,6 +220,9 @@ function getFavorites(): void{
 }
 
 function getFavData(): void{
+  /*
+    This sets the favData state to items in the data that are also in the favorite state
+  */
   setLoading(true);
   const favs = data?.filter(item => {
     if (favorites.includes(item.name.currencyCode)){
@@ -226,8 +245,8 @@ function getFavData(): void{
             <Router>
               <Suspense fallback={<Loading/>}>
                 <Routes>
-                  <Route path='/' Component={Home}/>
-                  <Route path='/favorites' Component={Favs}/>
+                  <Route path='/' Component={Home} errorElement={<Error/>}/>
+                  <Route path='/favorites' Component={Favs} errorElement={<Error/>}/>
                 </Routes>
               </Suspense>
             </Router>
