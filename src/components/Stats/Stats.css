@@ -2,3 +2,8 @@
     font-size: large;
     font-weight: light;
 }
+
+.stats {
+    position: relative;
+    right: 0;
+}

@@ -84,28 +84,30 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
 
 
 
-    return <Drawer
-    title={`${details?.name} Info`}
-    placement="right"
-    size={'large'}
-    onClose={onClose}
-    open={open}
-    extra={
-      <Space>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="primary" onClick={onClose}>
-          OK
-        </Button>
-      </Space>
-    }
-  >
-    {avg ? 
-    <div className='details'>  
-      <Stats max={max as Data} min={min as Data} avg={avg as number} curr={details?.code as string} base={defValue.value as string}/>
+    return <div className='drawer'>
+      <Drawer
+      title={`${details?.name} Info`}
+      placement="right"
+      size={'large'}
+      onClose={onClose}
+      open={open}
+      extra={
+        <Space>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="primary" onClick={onClose}>
+            OK
+          </Button>
+        </Space>
+      }
+    >
+      {avg ? 
+      <div className='details'>  
+        <Stats max={max as Data} min={min as Data} avg={avg as number} curr={details?.code as string} base={defValue.value as string}/>
+      </div>
+      : 
+      <Loading/>
+      }
+    </Drawer>
     </div>
-    : 
-    <Loading/>
-    }
-  </Drawer>
 }
 

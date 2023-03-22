@@ -14,11 +14,11 @@ export default function Stats ({max, min, avg, curr, base}: {max:Data, min:Data,
 
 
 
-  return <div>
+  return <div className='stats'>
             <div className='stats-header'>
                 <h3>{curr} against {base}</h3>
             </div>
-            <Row gutter={16}>
+            <Row gutter={16} style={{justifyContent: 'right'}}>
                 <Col span={12}>
                 <Card bordered={false}>
                     <Statistic
@@ -31,6 +31,8 @@ export default function Stats ({max, min, avg, curr, base}: {max:Data, min:Data,
                     />
                 </Card>
                 </Col>
+            </Row>
+            <Row gutter={16} style={{justifyContent: 'right'}}>
                 <Col span={12}>
                 <Card bordered={false}>
                     <Statistic
@@ -44,7 +46,7 @@ export default function Stats ({max, min, avg, curr, base}: {max:Data, min:Data,
                 </Card>
                 </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} style={{justifyContent: 'right'}}>
                 <Col span={12}>
                     <Card bordered={false}>
                         <Statistic

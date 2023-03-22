@@ -1,3 +1,11 @@
 .details {
     color: black;
+    align-items: right;
+    justify-content: right;
 }
+
+
+/* 
+.drawer{
+    display: flex;
+} */
