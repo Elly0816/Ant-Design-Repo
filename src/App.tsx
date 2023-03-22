@@ -6,12 +6,12 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
-// import Error from './components/Error/Error';
+import Error from './components/Error/Error';
 
 
 const Home = lazy(() => import('./views/Home/Home'));
 const Favs = lazy(() => import('./views/Favs/Favourites'));
-const Error = lazy(() => import('./components/Error/Error'));
+// const Error = lazy(() => import('./components/Error/Error'));
 
 
 
