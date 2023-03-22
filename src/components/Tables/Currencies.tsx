@@ -1,6 +1,6 @@
 import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, InputRef, Tag } from 'antd';
+import { Button, Input, Space, Table, InputRef, Tag, Drawer, DrawerProps } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
@@ -10,6 +10,8 @@ import Mybutton from '../Button/Button';
 import { appContext } from '../../App';
 // import { tableData } from '../../helpers/getTableData';
 import Loading from '../Loading/Loading';
+import MyDrawer from '../Drawer/myDrawer';
+import { getDetails } from '../../helpers/getTableData';
 
 interface DataType {
   key: string;
@@ -36,14 +38,21 @@ export default function myTable (): ReactElement {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   // const [loading, setLoading] = useState(false);
+
+
+  const [details, setDetail] = useState<{name: string, code: string}>();
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+
+ 
   
 
-  const {data, loading, setLoading, favorites, editFavorites} : {
+  const {data, loading, setLoading, favorites, editFavorites, defValue} : {
     data: DataType[],
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
     favorites: string[],
     editFavorites: (code: string) => void,
+    defValue: {label: string, value: string|undefined}
 }= useContext(appContext);
 
   // const [tableData, setTableData] = useState<DataType[]>(data);
@@ -281,6 +290,22 @@ export default function myTable (): ReactElement {
         </span>
       ))
     },
+    {
+      title: 'Show Details',
+      key: 'operation',
+      dataIndex: 'name',
+      fixed: 'right',
+      width: '15%',
+      render: ((name: {currencyCode: string, currencyName: string}) => name.currencyName !== defValue.value && (
+      <Button onClick={() => {
+        setOpenDrawer(true);
+        setDetail({name: name.currencyName, code: name.currencyCode});
+        // getDetails(defValue, name.currencyName)
+        }}>
+              {name.currencyName}
+      </Button>
+      )),
+    },
   ]
 
   return <div className='table'>
@@ -296,8 +321,16 @@ export default function myTable (): ReactElement {
             </span>
         </div>
         {!loading?
-         <Table scroll={{x:true, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}/>
+         <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
+         summary={() => (
+          <Table.Summary>
+            <Table.Summary.Row>
+              {/* <Table.Summary.Cell index={10}>Fix Right</Table.Summary.Cell> */}
+            </Table.Summary.Row>
+          </Table.Summary>
+        )}/>
         : <Loading/>}
+        <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
     </div>;
 };
 

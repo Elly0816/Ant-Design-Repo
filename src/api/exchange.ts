@@ -16,11 +16,16 @@ let key = import.meta.env.VITE_API_KEY;
 
 const myHeaders = new Headers({'apikey': key});
 
+export const controller = new AbortController();
+const signal = controller.signal
+
 let requestOptions: RequestInit = {
     method: "GET",
     redirect: 'follow',
-    headers: myHeaders
+    headers: myHeaders,
+    signal: signal
 }
+
 
 
 export async function convert(amount: number, from: string, to: string, date?:string){
@@ -111,32 +116,33 @@ export async function latest(symbolArray?: Array<Array<string>>, base?: string) 
     
 }
 
+
 export async function timeSeries(start_date: string, end_date: string, base?: string, symbols?: string) {
     
     /**
      * @param date in the format YYY-MM-DD
     */
 
-    const dateDiff = ((new Date(end_date).getTime() - new Date(start_date).getTime()) / (1000*3600*24));
-    console.log(` The difference is: ${dateDiff}`);
+    console.log('today: '+start_date);
+    console.log('lastYear: '+end_date);
+    let url: string = `${endpoint}/timeseries?start_date=${start_date}&end_date=${end_date}`;
 
-    // if (dateDiff <= 365){
-    //     let url = `${endpoint}/timeseries?start_date=${start_date}&end_date=${end_date}`;
-    //     if (base) {
-    //         url += `&base=${base}`;
-    //     }
-    //     if (symbols) {
-    //         url += `&symbols=${symbols}`;
-    //     }
-        
-    //     try {
-    //         const response = await fetch(url, requestOptions);
-    //         const result = await response.json();
-    //         console.log(result);
-    //         return result;
-    //         } catch (error) {
-    //             throw error;
-    //         }
-    // }
-
+    console.log(start_date, end_date, base, symbols);
+    if (base){
+        url += `&base=${base}`;
+    }
+    if (symbols){
+        url += `&symbols=${Array.of(symbols)}`;
+    }
+    console.log(url);
+    try {
+        const response = await fetch(url, requestOptions);
+        const result = await response.json();
+        // console.log(result);
+        return result;
+    } catch (error) {
+        // console.log(error);
+        throw error;
+    }
+   
 }            

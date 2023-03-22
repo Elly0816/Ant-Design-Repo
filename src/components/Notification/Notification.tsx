@@ -35,7 +35,7 @@ export function addedNotification(currency: string)  {
         </span>),
         placement: 'top',
         style: add,
-        duration: 1.5
+        duration: 1
     })
 }
 
@@ -48,6 +48,6 @@ export function removedNotification(currency: string)  {
         ),
         placement: 'top',
         style: remove,
-        duration: 1.5
+        duration: 1
     })
 }

@@ -11,6 +11,7 @@ import { appContext } from '../../App';
 // import { tableData } from '../../helpers/getTableData';
 import Loading from '../Loading/Loading';
 
+
 interface DataType {
   key: string;
   name: {
@@ -188,21 +189,11 @@ export default function myTable (): ReactElement {
       ...getColumnSearchProps('name'),
       render: ((name: {countryCode: string, currencyName: string, currencySymbol: string, currencyCode: string}) => 
       <div style={nameStyle} title={`${name.currencyName}`}>
-        <div className='name-image' onClick={() => {
-          editFavorites(name.currencyCode);
-          }}>
-          {(favorites.includes(name.currencyCode))?
-          <img title={`Remove ${name.currencyCode} from favorites`} src='./images/red-heart.png' alt='red-heart'/> 
-          :
-           <img title={`Add ${name.currencyCode} to favorites`} src='./images/black-heart.png' alt='black-heart'/>}
-        </div>
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
-          {/* <span>{name.currencySymbol}</span> */}
           <br />
           <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
           <br />
           <span>{name.currencyCode}</span>
-          {/* <span>{name.currencyCode}</span> */}
         </div>
       </div>)
     },
@@ -281,6 +272,22 @@ export default function myTable (): ReactElement {
         </span>
       ))
     },
+    {
+      title: 'Remove from Favorites',
+      key: 'operation',
+      dataIndex: 'name',
+      fixed: 'right',
+      width: '10%',
+      render: ((name: {countryCode: string, currencyName: string, currencySymbol: string, currencyCode: string}) => 
+      <div className='remove' onClick={() => {
+        editFavorites(name.currencyCode);
+      }}
+      title={`Remove ${name.currencyCode} from favorites`}>
+          <img src="./images/broken-heart.png" alt={`Remove ${name.currencyCode} from favorites`} />
+          {name.currencyCode}
+      </div>
+      ),
+    },
   ]
 
   return <div className='table'>
@@ -296,7 +303,14 @@ export default function myTable (): ReactElement {
             </span>
         </div>
         {!loading?
-         <Table scroll={{x:true, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
+         <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}
+         summary={() => (
+          <Table.Summary>
+            <Table.Summary.Row>
+              {/* <Table.Summary.Cell index={10}>Fix Right</Table.Summary.Cell> */}
+            </Table.Summary.Row>
+          </Table.Summary>
+        )}/>
         : <Loading/>}
     </div>;
 };

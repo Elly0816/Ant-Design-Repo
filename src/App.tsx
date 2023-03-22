@@ -120,7 +120,24 @@ useEffect(() => {
     let oldData = localStorage.getItem('data');
     getFavorites();
     if (!oldData || (oldData && !(symbol as string in JSON.parse(oldData)))){
-      getTableData(symbol as string).then((res: tableData[]) =>
+      getData(symbol as string);
+    } else {
+      setData(JSON.parse(oldData as string)[symbol as string].filter((item: DataType) => item.name.currencyCode !== defValue.value));
+      let timer = setTimeout(() => {
+        setLoading(false);    
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+}, [defValue]);
+
+
+
+useEffect(()=> {
+  getFavData();
+}, [favorites]);
+
+function getData(symbol: string): void{
+  getTableData(symbol as string).then((res: tableData[]) =>
         {
           let newData: DataType[] = res.map((data: tableData, index: number) => ({
           key: index.toString(),
@@ -136,25 +153,12 @@ useEffect(() => {
           '1 month change': data.monthDiff,
           '1 year change': data.yearDiff,
       }));
-      setData(newData);
-      setLoading(false);
+      setData(newData.filter(item => item.name.currencyCode !== defValue.value));
       localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
+      setLoading(false);
     }
       );
-    } else {
-      let timer = setTimeout(() => {
-        setData(JSON.parse(oldData as string)[symbol as string]);
-        setLoading(false);    
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-}, [defValue]);
-
-
-
-useEffect(()=> {
-  getFavData();
-}, [favorites]);
+}
 
 
 function editFavorites(currencyCode: string): void{
@@ -171,13 +175,11 @@ function editFavorites(currencyCode: string): void{
       addedNotification(currencyCode)
     }
     localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
-    getFavorites();
   } else {
     let codes = [currencyCode];
     localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
-    getFavorites();
   }
-  // getFavData();
+  getFavorites();
 };
 
 

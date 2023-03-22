@@ -1,4 +1,4 @@
-import { latest, convert, timeSeries, fluct } from '../api/exchange';
+import { latest, convert, timeSeries, fluct, controller } from '../api/exchange';
 import { COUNTRIES } from './countries';
 import moment, { Moment } from 'moment';
 import { ReactElement } from 'react';
@@ -56,6 +56,18 @@ export async function getTableData(base: string) : Promise<tableData[]>{
                 }
             ]
     */
+
+}
+
+
+export async function getDetails(base:string, symbol:string): Promise<object>{
+    let today: Moment | string = moment();
+    const lastYear = today.subtract(1, 'years').format().split('T')[0];
+    today = moment().format().split('T')[0];
+
+    const {rates} = await timeSeries(lastYear, today, base, symbol);
+    // console.log(rates);
+    return rates as object;
 
 }
 

@@ -80,6 +80,9 @@ export default function myButton(): ReactElement {
           setDefValue: (value: {label: string, value: string|undefined}) => {label: string, value: string|undefined}} = useContext(appContext);
     // const [defValue, setDefValue] = useState<{label: string, value: string|undefined}>({ label: countriesToShow[0].value, value: countriesToShow[0].id });
     
+    // console.log('This is the defValue');
+    // console.log(defValue.value);
+
     return <Space wrap>
     <Select
       onSelect={(e) => {

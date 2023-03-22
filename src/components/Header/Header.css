@@ -1,0 +1,9 @@
+.button {
+    color: black;
+    display: flex;
+    background-color: white;
+}
+
+.button:active {
+    color: white;
+}
