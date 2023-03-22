@@ -106,6 +106,7 @@ export default function PrimarySearchAppBar(): ReactElement {
                 <Box sx={mainStyling}>
             <AppBar sx={appBar} position="relative">
                 <Toolbar>
+                  <img src="./images/exchange-rate.png" alt="" />
                 <Typography
                     variant="h6"
                     noWrap
