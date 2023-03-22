@@ -85,7 +85,7 @@ export default function myButton(): ReactElement {
 
     return <Space wrap>
     <Select
-      onSelect={(e) => {
+      onChange={(e) => {
         setDefValue({label: e.label, value: e.value});
       }}
       virtual={false}
