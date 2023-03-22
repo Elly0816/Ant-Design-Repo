@@ -170,9 +170,9 @@ function getData(symbol: string): void{
       }));
       setData(newData.filter(item => item.name.currencyCode !== defValue.value));
       localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
-      
+      setLoading(false);
     }
-      ).then(ans => setLoading(false));
+      );
 }
 
 

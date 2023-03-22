@@ -141,7 +141,7 @@ export async function timeSeries(start_date: string, end_date: string, base?: st
         // console.log(result);
         return result;
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         throw error;
     }
    
