@@ -1,4 +1,4 @@
-import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties } from 'react';
+import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties, Fragment } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, InputRef, Tag } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
@@ -10,22 +10,22 @@ import Mybutton from '../Button/Button';
 import { appContext } from '../../App';
 // import { tableData } from '../../helpers/getTableData';
 import Loading from '../Loading/Loading';
+import { DataType } from './Helpers/Table.Utilities';
 
-
-interface DataType {
-  key: string;
-  name: {
-    countryCode: string,
-    currencySymbol: string,
-    currencyCode: string,
-    currencyName: string
-};
-  rate: number;
-  '24 hour change': number;
-  '7 day change': number;
-  '1 month change': number;
-  '1 year change': number
-}
+// interface DataType {
+//   key: string;
+//   name: {
+//     countryCode: string,
+//     currencySymbol: string,
+//     currencyCode: string,
+//     currencyName: string
+// };
+//   rate: number;
+//   '24 hour change': number;
+//   '7 day change': number;
+//   '1 month change': number;
+//   '1 year change': number
+// }
 
 type DataIndex = keyof DataType;
 
@@ -39,10 +39,9 @@ export default function myTable (): ReactElement {
   // const [loading, setLoading] = useState(false);
   
 
-  const {loading, setLoading, favorites, editFavorites, favData, getData, defValue} : {
+  const {loading, setLoading, editFavorites, favData, getData, defValue} : {
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    favorites: string[],
     editFavorites: (code: string) => void,
     favData: DataType[],
     getData: (data: string) => void,
@@ -410,21 +409,23 @@ export default function myTable (): ReactElement {
     },
   ]
 
-  return <div className='table'>
-        <div style={{ marginBottom: 16 }}>
-            <div className="buttons-above-table">
-                <Mybutton/>
-                <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
-                    {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
-                </Button>
-            </div>
-            <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-            </span>
-        </div>
-        {!loading?
-         <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
-        : <Loading/>}
-    </div>;
+  return <Fragment>
+          <div className='table'>
+                <div style={{ marginBottom: 16 }}>
+                    <div className="buttons-above-table">
+                        <Mybutton/>
+                        <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
+                            {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
+                        </Button>
+                    </div>
+                    <span style={{ marginLeft: 8 }}>
+                    {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                    </span>
+                </div>
+                {!loading?
+                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
+                : <Loading/>}
+            </div>;
+          </Fragment>
 };
 

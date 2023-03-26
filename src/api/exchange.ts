@@ -17,7 +17,11 @@ let key = import.meta.env.VITE_API_KEY;
 const myHeaders = new Headers({'apikey': key});
 
 export const controller = new AbortController();
-const signal = controller.signal
+export const tsController = new AbortController();
+const signal = controller.signal;
+const timeSeriesSignal = tsController.signal;
+export const convertController = new AbortController();
+const convertSignal = convertController.signal;
 
 let requestOptions: RequestInit = {
     method: "GET",
@@ -39,7 +43,7 @@ export async function convert(amount: number, from: string, to: string, date?:st
     }
 
     try {
-        const response = await fetch(url, requestOptions);
+        const response = await fetch(url, {...requestOptions, signal: convertSignal});
         const result = await response.json();
         console.log(result);
         return result;
@@ -136,7 +140,7 @@ export async function timeSeries(start_date: string, end_date: string, base?: st
     }
     console.log(url);
     try {
-        const response = await fetch(url, requestOptions);
+        const response = await fetch(url, {...requestOptions, signal: timeSeriesSignal}, );
         const result = await response.json();
         // console.log(result);
         return result;

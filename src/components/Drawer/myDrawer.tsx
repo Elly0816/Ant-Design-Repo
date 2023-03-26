@@ -1,10 +1,11 @@
 import { Button, Drawer, DrawerProps, Space } from "antd";
-import { ReactElement, useEffect, useState, useContext } from "react";
+import { ReactElement, useEffect, useState, useContext, CSSProperties, Fragment } from "react";
 import './myDrawer.css';
 import Loading from "../Loading/Loading";
 import { getDetails } from "../../helpers/getTableData";
 import { appContext } from "../../App";
 import Stats from "../Stats/Stats";
+import { tsController } from "../../api/exchange";
 
 
 
@@ -29,6 +30,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
     const [max, setMax] = useState<Data>();
     const [min, setMin] = useState<Data>();
     const [avg, setAvg] = useState<number>();
+    const [matches, setMatches] = useState(window.matchMedia("(min-width: 768px)").matches);
     
       const onClose = () => {
         setOpen(false);
@@ -38,7 +40,11 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
 
       
       useEffect(() => {
-          setOpen(drawer);
+        setOpen(drawer);
+        // setMax(entries.reduce((max, entry) => entry[1].[codeToSend]))
+        const mediaQueryList = window.matchMedia("(min-width: 768px)");
+        const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+        mediaQueryList.addEventListener('change', listener);
           console.log('This is the def value');
           console.log(defValue.value);
           if (drawer && details){
@@ -76,41 +82,49 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
                 setMin(entries[minIndex]);
                 setAvg(averageValue);
                 // setInfo(entries as unknown as Data[]);
-            });
-            // setMax(entries.reduce((max, entry) => entry[1].[codeToSend]))
-            
+              });
+              return () => {
+              tsController.abort();
+              mediaQueryList.removeEventListener('change', listener);
+            }
         }
+
       }, [drawer, details]);
 
 
 
+      // const drawerStyle: CSSProperties = {
+      //   hover
+      // }
 
-    return <div className='drawer'>
-      <Drawer
-      title={`${details?.name} Info`}
-      placement="right"
-      size={'large'}
-      onClose={onClose}
-      open={open}
-      extra={
-        <Space>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" onClick={onClose}>
-            OK
-          </Button>
-        </Space>
-      }
-    >
-      {avg ? 
-      <div className='details'>  
-        <Stats max={max as Data} min={min as Data} avg={avg as number} curr={details?.code as string} base={defValue.value as string}/>
-      </div>
-      :
-      <div className="loading-details">
-        <Loading/>
-      </div> 
-      }
-    </Drawer>
-    </div>
+    return <Fragment>
+            <div className='drawer'>
+              <Drawer
+              title={`${details?.name} Info`}
+              placement="right"
+              size={matches? 'large' : 'default'}
+              onClose={onClose}
+              open={open}
+              // extra={
+              //   <Space>
+              //     <Button onClick={onClose}>Cancel</Button>
+              //     <Button type="primary" onClick={onClose}>
+              //       OK
+              //     </Button>
+              //   </Space>
+              // }
+            >
+              {avg ? 
+              <div className='details'>  
+                <Stats max={max as Data} min={min as Data} avg={avg as number} curr={details?.code as string} base={defValue.value as string}/>
+              </div>
+              :
+              <div className="loading-details">
+                <Loading/>
+              </div> 
+              }
+            </Drawer>
+            </div>
+          </Fragment>
 }
 

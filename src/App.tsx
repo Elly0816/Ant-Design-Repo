@@ -1,12 +1,14 @@
-import {Fragment, ReactElement, useState, useEffect, createContext, useMemo, Suspense, lazy} from 'react';
-import { COUNTRIES } from './helpers/countries';
-import { SelectProps } from 'antd';
+import {Fragment, ReactElement, useState, useEffect, createContext, useMemo, Suspense, lazy, useCallback} from 'react';
+import {type COUNTRY,  COUNTRIES } from './helpers/countries';
+import { type SelectProps } from 'antd';
 import { getTableData, tableData } from './helpers/getTableData';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
 import Error from './components/Error/Error';
+import { controller } from './api/exchange';
+import { type DataType } from './components/Tables/Helpers/Table.Utilities';
 
 
 const Home = lazy(() => import('./views/Home/Home'));
@@ -15,54 +17,39 @@ const Favs = lazy(() => import('./views/Favs/Favourites'));
 
 
 
-// const router = createBrowserRouter([
-//   {
-//     path: "/", 
-//     element: <Home/>,
-//     errorElement: <Error/>
-//     Suspense: <Suspense/>
+// interface COUNTRY {
+//   "name": string,
+//   "code": string,
+//   "capital": string,
+//   "region": string,
+//   "currency": {
+//       "code": string,
+//       "name": string,
+//       "symbol": string
 //   },
-//   {
-//     path: "/favorites",
-//     element: <Favs/>,
-//     errorElement: <Error/>
-//   }
-// ])
+//   "language": {
+//       "iso639_2"?: string,
+//       "code": string,
+//       "name": string,
+//       "nativeName"?: string
+//   },
+//   "flag": string
+// }
 
-
-interface COUNTRY {
-  "name": string,
-  "code": string,
-  "capital": string,
-  "region": string,
-  "currency": {
-      "code": string,
-      "name": string,
-      "symbol": string
-  },
-  "language": {
-      "iso639_2"?: string,
-      "code": string,
-      "name": string,
-      "nativeName"?: string
-  },
-  "flag": string
-}
-
-interface DataType {
-  key: string;
-  name: {
-    countryCode: string,
-    currencySymbol: string,
-    currencyCode: string,
-    currencyName: string
-};
-  rate: number;
-  '24 hour change': number;
-  '7 day change': number;
-  '1 month change': number;
-  '1 year change': number
-}
+// interface DataType {
+//   key: string;
+//   name: {
+//     countryCode: string,
+//     currencySymbol: string,
+//     currencyCode: string,
+//     currencyName: string
+// };
+//   rate: number;
+//   '24 hour change': number;
+//   '7 day change': number;
+//   '1 month change': number;
+//   '1 year change': number
+// }
 
 
 function reduceCountries(countries: COUNTRY[]): SelectProps[]{
@@ -137,7 +124,10 @@ useEffect(() => {
       let timer = setTimeout(() => {
         setLoading(false);    
       }, 1500);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        controller.abort();
+      };
     }
 }, [defValue]);
 
@@ -147,11 +137,9 @@ useEffect(()=> {
   getFavData();
 }, [favorites]);
 
-function getData(symbol: string): void{
-  /*
-    This gets the data by calling the function below
-    The response of the function is mapped to the DataType type for use in the whole app
-  */
+
+
+const getData = useCallback((symbol: string) => {
   getTableData(symbol as string).then((res: tableData[]) =>
         {
           let newData: DataType[] = res.map((data: tableData, index: number) => ({
@@ -172,34 +160,33 @@ function getData(symbol: string): void{
       localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
       setLoading(false);
     }
-      );
-}
+)}, []);
 
 
-function editFavorites(currencyCode: string): void{
+const editFavorites = useCallback((currencyCode: string) => {
   /*
     This adds and removes the country code to the local storage.
     This also updates the favorite state by calling getFavorites()
   */
-  let favoritesString = localStorage.getItem("favorites");
-  if (favoritesString) {
-    let favorites = JSON.parse(favoritesString);
-    let codes: string[] = favorites.codes;
-    let code = codes.filter((code: string) => code === currencyCode)[0];
-    if (code){
-      codes = codes.filter(item => item.indexOf(code) === -1);
-      removedNotification(currencyCode);
+    let favoritesString = localStorage.getItem("favorites");
+    if (favoritesString) {
+      let favorites = JSON.parse(favoritesString);
+      let codes: string[] = favorites.codes;
+      let code = codes.filter((code: string) => code === currencyCode)[0];
+      if (code){
+        codes = codes.filter(item => item.indexOf(code) === -1);
+        removedNotification(currencyCode);
+      } else {
+        codes.push(currencyCode);
+        addedNotification(currencyCode)
+      }
+      localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
     } else {
-      codes.push(currencyCode);
-      addedNotification(currencyCode)
+      let codes = [currencyCode];
+      localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
     }
-    localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
-  } else {
-    let codes = [currencyCode];
-    localStorage.setItem('favorites', JSON.stringify({'codes': codes}));
-  }
-  getFavorites();
-};
+    getFavorites();
+}, []);
 
 
 function getFavorites(): void{
@@ -220,22 +207,24 @@ function getFavorites(): void{
   }
 }
 
-function getFavData(): void{
+
+
+const getFavData = useCallback(() => {
   /*
     This sets the favData state to items in the data that are also in the favorite state
   */
-  setLoading(true);
-  const favs = data?.filter(item => {
-    if (favorites.includes(item.name.currencyCode)){
-      return item;
-    }
-  });
-  console.log('THis is in favData');
-  let favData: DataType[] =  favs as DataType[];
-  console.log(favData);
-  setFavData(favData);
-  setLoading(false);
-}
+    setLoading(true);
+    const favs = data?.filter(item => {
+      if (favorites.includes(item.name.currencyCode)){
+        return item;
+      }
+    });
+    console.log('THis is in favData');
+    let favData: DataType[] =  favs as DataType[];
+    console.log(favData);
+    setFavData(favData);
+    setLoading(false);
+}, [data])
 
 
 
@@ -246,8 +235,9 @@ function getFavData(): void{
             <Router>
               <Suspense fallback={<Loading/>}>
                 <Routes>
-                  <Route path='/' Component={Home} errorElement={<Error/>}/>
-                  <Route path='/favorites' Component={Favs} errorElement={<Error/>}/>
+                  <Route path='/' Component={Home}/>
+                  <Route path='/favorites' Component={Favs}/>
+                  <Route path='*' Component={Error}/>
                 </Routes>
               </Suspense>
             </Router>

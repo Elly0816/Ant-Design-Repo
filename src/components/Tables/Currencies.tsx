@@ -1,4 +1,4 @@
-import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties } from 'react';
+import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties, Fragment } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, InputRef, Tag, Drawer, DrawerProps } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
@@ -12,21 +12,23 @@ import { appContext } from '../../App';
 import Loading from '../Loading/Loading';
 import MyDrawer from '../Drawer/myDrawer';
 import { getDetails } from '../../helpers/getTableData';
+import { DataType } from './Helpers/Table.Utilities';
 
-interface DataType {
-  key: string;
-  name: {
-    countryCode: string,
-    currencySymbol: string,
-    currencyCode: string,
-    currencyName: string
-};
-  rate: number;
-  '24 hour change': number;
-  '7 day change': number;
-  '1 month change': number;
-  '1 year change': number
-}
+
+// interface DataType {
+//   key: string;
+//   name: {
+//     countryCode: string,
+//     currencySymbol: string,
+//     currencyCode: string,
+//     currencyName: string
+// };
+//   rate: number;
+//   '24 hour change': number;
+//   '7 day change': number;
+//   '1 month change': number;
+//   '1 year change': number
+// }
 
 type DataIndex = keyof DataType;
 
@@ -219,7 +221,7 @@ export default function myTable (): ReactElement {
     },
     {
       title: 'Rate',
-      dataIndex: 'rate',
+      dataIndex: ['rate', 'name'],
       key: 'rate',
       width: '10%',
       sorter: (a, b) => a.rate - b.rate,
@@ -241,10 +243,10 @@ export default function myTable (): ReactElement {
         else return record.rate < parseInt(value.slice(1)) as boolean;
       },
       filterSearch: true,
-      render: ((rate: number) => (
+      render: ((rate: number, record: DataType)  => (
         <span>
-              <Tag color={(rate>1) ? 'green' : (rate<1) ? 'red' : 'gray'} key={rate}>
-              {rate}
+              <Tag color={(record.rate>1) ? 'green' : (record.rate<1) ? 'red' : 'gray'} key={rate}>
+              {record.name.currencySymbol+" "+record.rate}
               </Tag>
         </span>
       ))
@@ -256,6 +258,7 @@ export default function myTable (): ReactElement {
       width: '10%',
       sorter: (a, b) => a['24 hour change'] - b['24 hour change'],
       sortDirections: ['descend', 'ascend'],
+      filterMode: 'menu',
       filters: [
         {
           text: 'Less than -1',
@@ -427,29 +430,31 @@ export default function myTable (): ReactElement {
     },
   ]
 
-  return <div className='table'>
-        <div style={{ marginBottom: 16 }}>
-            <div className="buttons-above-table">
-                <Mybutton/>
-                <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
-                    {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
-                </Button>
-            </div>
-            <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-            </span>
-        </div>
-        {!loading?
-         <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
-         summary={() => (
-          <Table.Summary>
-            <Table.Summary.Row>
-              {/* <Table.Summary.Cell index={10}>Fix Right</Table.Summary.Cell> */}
-            </Table.Summary.Row>
-          </Table.Summary>
-        )}/>
-        : <Loading/>}
-        <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
-    </div>;
+  return <Fragment>
+          <div className='table'>
+                <div style={{ marginBottom: 16 }}>
+                    <div className="buttons-above-table">
+                        <Mybutton/>
+                        <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
+                            {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
+                        </Button>
+                    </div>
+                    <span style={{ marginLeft: 8 }}>
+                    {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                    </span>
+                </div>
+                {!loading?
+                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
+                summary={() => (
+                  <Table.Summary>
+                    <Table.Summary.Row>
+                      {/* <Table.Summary.Cell index={10}>Fix Right</Table.Summary.Cell> */}
+                    </Table.Summary.Row>
+                  </Table.Summary>
+                )}/>
+                : <Loading/>}
+                <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
+            </div>;
+          </Fragment>
 };
 

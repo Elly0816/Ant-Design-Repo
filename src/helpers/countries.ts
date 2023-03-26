@@ -1,4 +1,4 @@
-interface COUNTRY {
+export interface COUNTRY {
     "name": string,
     "code": string,
     "capital": string,

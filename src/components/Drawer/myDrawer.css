@@ -1,7 +1,8 @@
 .details {
     color: black;
-    align-items: right;
-    justify-content: right;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 
@@ -13,6 +14,13 @@
 @media only screen and (max-width: 600px) {
     .loading-details {
         display: flex;
-        justify-content: right;
+        justify-content: center;
     }
+}
+
+.loading-details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
