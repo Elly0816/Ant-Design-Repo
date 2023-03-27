@@ -9,10 +9,12 @@ import Loading from './components/Loading/Loading';
 import Error from './components/Error/Error';
 import { controller } from './api/exchange';
 import { type DataType } from './components/Tables/Helpers/Table.Utilities';
+import Home from './views/Home/Home';
+import Favs from './views/Favs/Favourites'
 
 
-const Home = lazy(() => import('./views/Home/Home'));
-const Favs = lazy(() => import('./views/Favs/Favourites'));
+// const Home = lazy(() => import('./views/Home/Home'));
+// const Favs = lazy(() => import('./views/Favs/Favourites'));
 // const Error = lazy(() => import('./components/Error/Error'));
 
 
@@ -109,7 +111,7 @@ export default function App(): ReactElement{
  
   
   const[view, setView] = useState<'currencies' | 'favorites'>('currencies');
-  const [favorites, setFavorites] = useState<Array<string>>([]);
+  const [favorites, setFavorites] = useState<Array<string>>([]); //Gotten from local storage
   const [favData, setFavData] = useState<DataType[] | undefined>();
 
 useEffect(() => {
@@ -224,7 +226,7 @@ const getFavData = useCallback(() => {
     console.log(favData);
     setFavData(favData);
     setLoading(false);
-}, [data])
+}, [data, favorites])
 
 
 
@@ -233,13 +235,11 @@ const getFavData = useCallback(() => {
     <appContext.Provider value={{getData, favData, getFavData, favorites, editFavorites, view, setView, countriesToShow, defValue, setDefValue, data, loading, setLoading}}>
       <Fragment>
             <Router>
-              <Suspense fallback={<Loading/>}>
                 <Routes>
                   <Route path='/' Component={Home}/>
                   <Route path='/favorites' Component={Favs}/>
                   <Route path='*' Component={Error}/>
                 </Routes>
-              </Suspense>
             </Router>
       </Fragment>
     </appContext.Provider>
