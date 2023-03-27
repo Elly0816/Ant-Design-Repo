@@ -424,7 +424,7 @@ export default function myTable (): ReactElement {
                 </div>
                 {!loading?
                 <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
-                : <Loading/>}
+                : <Loading item='Data'/>}
             </div>;
           </Fragment>
 };

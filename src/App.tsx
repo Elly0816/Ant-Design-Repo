@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
 import Error from './components/Error/Error';
-import { controller } from './api/exchange';
+import { latestController, fluctController, tsController } from './api/exchange';
 import { type DataType } from './components/Tables/Helpers/Table.Utilities';
 import Home from './views/Home/Home';
 import Favs from './views/Favs/Favourites'
@@ -125,10 +125,11 @@ useEffect(() => {
       setData(JSON.parse(oldData as string)[symbol as string].filter((item: DataType) => item.name.currencyCode !== defValue.value));
       let timer = setTimeout(() => {
         setLoading(false);    
-      }, 1500);
-      return () => {
         clearTimeout(timer);
-        controller.abort();
+      }, 15000);
+      return () => {
+        // latestController.abort();
+        // fluctController.abort();
       };
     }
 }, [defValue]);
@@ -142,6 +143,7 @@ useEffect(()=> {
 
 
 const getData = useCallback((symbol: string) => {
+  setLoading(true);
   getTableData(symbol as string).then((res: tableData[]) =>
         {
           let newData: DataType[] = res.map((data: tableData, index: number) => ({
@@ -162,7 +164,7 @@ const getData = useCallback((symbol: string) => {
       localStorage.setItem('data', JSON.stringify({[symbol as string]: newData}));
       setLoading(false);
     }
-)}, []);
+)}, [defValue]);
 
 
 const editFavorites = useCallback((currencyCode: string) => {
@@ -225,7 +227,10 @@ const getFavData = useCallback(() => {
     let favData: DataType[] =  favs as DataType[];
     console.log(favData);
     setFavData(favData);
-    setLoading(false);
+    let timer = setTimeout(()=> {
+      setLoading(false);
+      clearTimeout(timer);
+    }, 1000);
 }, [data, favorites])
 
 

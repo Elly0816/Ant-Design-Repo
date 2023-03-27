@@ -16,18 +16,22 @@ let key = import.meta.env.VITE_API_KEY;
 
 const myHeaders = new Headers({'apikey': key});
 
-export const controller = new AbortController();
+export const fluctController = new AbortController();
 export const tsController = new AbortController();
-const signal = controller.signal;
-const timeSeriesSignal = tsController.signal;
 export const convertController = new AbortController();
+export const latestController = new AbortController();
+
+const fluctSignal = fluctController.signal;
+const timeSeriesSignal = tsController.signal;
 const convertSignal = convertController.signal;
+const latestSignal = latestController.signal;
+
+
 
 let requestOptions: RequestInit = {
     method: "GET",
     redirect: 'follow',
     headers: myHeaders,
-    signal: signal
 }
 
 
@@ -76,7 +80,7 @@ export async function fluct(start_date: string, end_date: string, base?: string,
         }
       
         try {
-          const response = await fetch(url, requestOptions);
+          const response = await fetch(url, {...requestOptions, signal: fluctSignal});
           const result = await response.json();
           console.log(result);
           return result;
@@ -109,13 +113,15 @@ export async function latest(symbolArray?: Array<Array<string>>, base?: string) 
     }
 
     try{
-        const response = await fetch(url, requestOptions);
+        const response = await fetch(url, {...requestOptions, signal: latestSignal});
         const result = await response.json();
         console.log(result);
         return result;
     } catch (error){
         console.log(error);
         throw error;
+    } finally {
+
     }
     
 }

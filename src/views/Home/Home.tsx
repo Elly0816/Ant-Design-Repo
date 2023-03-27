@@ -10,7 +10,7 @@ export default function Home(): ReactElement {
 
 return <Fragment>
         <Header/>
-        <Suspense fallback={<Loading/>}>
+        <Suspense fallback={<Loading item='Table'/>}>
             <Table/>
         </Suspense>
     </Fragment>

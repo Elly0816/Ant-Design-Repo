@@ -452,7 +452,7 @@ export default function myTable (): ReactElement {
                     </Table.Summary.Row>
                   </Table.Summary>
                 )}/>
-                : <Loading/>}
+                : <Loading item='Data'/>}
                 <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
             </div>;
           </Fragment>
