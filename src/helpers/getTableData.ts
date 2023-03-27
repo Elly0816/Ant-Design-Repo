@@ -1,4 +1,4 @@
-import { latest, convert, timeSeries, fluct, controller } from '../api/exchange';
+import { latest, convert, timeSeries, fluct, tsController } from '../api/exchange';
 import { COUNTRIES } from './countries';
 import moment, { Moment } from 'moment';
 import { ReactElement } from 'react';
