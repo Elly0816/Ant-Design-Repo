@@ -120,7 +120,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
               </div>
               :
               <div className="loading-details">
-                <Loading/>
+                <Loading item="Stats"/>
               </div> 
               }
             </Drawer>
