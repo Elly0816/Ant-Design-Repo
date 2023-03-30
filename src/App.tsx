@@ -122,6 +122,7 @@ useEffect(() => {
     if (!oldData || (oldData && !(symbol as string in JSON.parse(oldData)))){
       getData(symbol as string);
     } else {
+      //Ensures that the base currency does not appear in the list of rates
       setData(JSON.parse(oldData as string)[symbol as string].filter((item: DataType) => item.name.currencyCode !== defValue.value));
       let timer = setTimeout(() => {
         setLoading(false);    

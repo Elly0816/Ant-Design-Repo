@@ -1,0 +1,23 @@
+create a subfolder for each table containing files
+
+one file contains the columns for the table.
+
+another file contains the columns props.
+
+
+create a directory that contains the filters and the filter dropdowns for the table
+It should live in the tables folder
+
+
+Ths dropdown is a custom component that contains the following:
+
+Form input whose value is being tracked by a state
+radio buttons for less than, greater than, equal to ...etc
+
+
+the radio button that is checked has it's value passed to a state
+
+when filtering, the value in the input is compared with the record dataIndex, using the operator
+gotten from the radio button. 
+
+
