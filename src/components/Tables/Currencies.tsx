@@ -271,7 +271,7 @@ export default function myTable (): ReactElement {
                     </span>
                 </div>
                 {!loading?
-                <Table scroll={{x:'max-content', y:'85vh'}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
+                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
                 summary={() => (
                   <Table.Summary>
                     <Table.Summary.Row>
