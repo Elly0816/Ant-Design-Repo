@@ -5,7 +5,7 @@ import Loading from "../Loading/Loading";
 import { getDetails } from "../../helpers/getTableData";
 import { appContext } from "../../App";
 import Stats from "../Stats/Stats";
-import { tsController } from "../../api/exchange";
+// import { tsController } from "../../api/exchange";
 
 
 
@@ -21,7 +21,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
     {drawer: boolean,
     openDrawer: React.Dispatch<React.SetStateAction<boolean>>,
     details: {name: string, code: string} | undefined,
-    getInfo: (base: string, symbol: string) => Promise<object>}): ReactElement{
+    getInfo: (base: string, symbol: string, signal: AbortSignal) => Promise<object>}): ReactElement{
 
     const {defValue} : {defValue: {label: string, value: string|undefined}} = useContext(appContext);
     const [open, setOpen] = useState<boolean>(drawer);
@@ -44,6 +44,8 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
         // setMax(entries.reduce((max, entry) => entry[1].[codeToSend]))
         const mediaQueryList = window.matchMedia("(min-width: 768px)");
         const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+        const controller = new AbortController();
+        const signal = controller.signal;
         mediaQueryList.addEventListener('change', listener);
           console.log('This is the def value');
           console.log(defValue.value);
@@ -53,7 +55,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
             console.log('here is the value: '+value);
             const codeToSend = details?.code as string;
             console.log('here is the code: '+details?.code);
-            getInfo(value, codeToSend)
+            getInfo(value, codeToSend, signal)
             .then(res => {
                 console.log(res);
                 const entries = Object.entries(res) as Data[];
@@ -84,7 +86,7 @@ export default function MyDrawer({drawer, openDrawer, details, getInfo}:
                 // setInfo(entries as unknown as Data[]);
               });
               return () => {
-              tsController.abort();
+              controller.abort();
               mediaQueryList.removeEventListener('change', listener);
             }
         }

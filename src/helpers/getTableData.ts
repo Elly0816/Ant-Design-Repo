@@ -1,7 +1,6 @@
-import { latest, convert, timeSeries, fluct, tsController } from '../api/exchange';
+import { latest, convert, timeSeries, fluct } from '../api/exchange';
 import { COUNTRIES } from './countries';
 import moment, { Moment } from 'moment';
-import { ReactElement } from 'react';
 
 
 function getSymbols(countries: any): Array<Array<string>>{
@@ -11,7 +10,7 @@ function getSymbols(countries: any): Array<Array<string>>{
     return symbols;
 }
 
-export async function getTableData(base: string) : Promise<tableData[]>{
+export async function getTableData(base: string, signal:AbortSignal) : Promise<tableData[]>{
     /*
         This gets the latest rates and the changes over the past day, week, month and year.
 
@@ -30,11 +29,11 @@ export async function getTableData(base: string) : Promise<tableData[]>{
 
     try {
         let [rates, yesterdayF, lastWeekF, lastMonthF, lastYearF] = await Promise.all([
-            latest(symbols, base),
-            fluct(today, yesterday, base, symbols),
-            fluct(today, lastWeek, base, symbols),
-            fluct(today, lastMonth, base, symbols),
-            fluct(today, lastYear, base, symbols),
+            latest(signal, symbols, base),
+            fluct(today, yesterday, signal, base, symbols),
+            fluct(today, lastWeek, signal, base, symbols),
+            fluct(today, lastMonth, signal, base, symbols),
+            fluct(today, lastYear, signal, base, symbols),
         ]);
 
         console.log(mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF));
@@ -64,7 +63,7 @@ export async function getTableData(base: string) : Promise<tableData[]>{
 }
 
 
-export async function getDetails(base:string, symbol:string): Promise<object>{
+export async function getDetails(base:string, symbol:string, signal:AbortSignal): Promise<object>{
 
     /*
         This gets the details of the symbol passed into it
@@ -74,7 +73,7 @@ export async function getDetails(base:string, symbol:string): Promise<object>{
     const lastYear = today.subtract(1, 'years').format().split('T')[0];
     today = moment().format().split('T')[0];
 
-    const {rates} = await timeSeries(lastYear, today, base, symbol);
+    const {rates} = await timeSeries(signal, lastYear, today, base, symbol);
     // console.log(rates);
     return rates as object;
 

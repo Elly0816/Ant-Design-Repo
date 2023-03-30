@@ -110,7 +110,7 @@ export default function myTable (): ReactElement {
   }
 
   const imageStyle: CSSProperties = {
-    marginRight: '5%'
+    marginRight: '5%',
   }
 
 
@@ -121,6 +121,7 @@ export default function myTable (): ReactElement {
       dataIndex: 'name',
       key: 'name',
       width: '15%',
+      fixed: 'left',
       ...getColumnSearchProps('name', searchInput, handleSearch,
        rowSelection, handleReset,
         setSearchText, setSearchedColumn, searchedColumn, searchText),
@@ -137,9 +138,13 @@ export default function myTable (): ReactElement {
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
           {/* <span>{name.currencySymbol}</span> */}
           <br />
-          <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+          <div>
+            <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+          </div>
           <br />
           <span>{name.currencyCode}</span>
+          <br/>
+          <span>{`(${name.currencyName})`}</span>
           {/* <span>{name.currencyCode}</span> */}
         </div>
       </div>)
@@ -239,14 +244,14 @@ export default function myTable (): ReactElement {
       key: 'operation',
       dataIndex: 'name',
       fixed: 'right',
-      width: '15%',
+      width: '5%',
       render: ((name: {currencyCode: string, currencyName: string}) =>
       <Button title={`Show ${name.currencyName} Details`} onClick={() => {
         setOpenDrawer(true);
         setDetail({name: name.currencyName, code: name.currencyCode});
         // getDetails(defValue, name.currencyName)
         }}>
-              {name.currencyName}
+              <div style={{fontWeight: 'bolder'}}>...</div>
       </Button>
       ),
     },

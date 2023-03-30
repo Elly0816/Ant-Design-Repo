@@ -96,9 +96,13 @@ export default function myTable (): ReactElement {
       <div style={nameStyle} title={`${name.currencyName}`}>
         <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
           <br />
-          <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+          <div>
+            <img style={imageStyle} alt={name.currencyCode} src={`https://flagsapi.com/${name.countryCode}/shiny/16.png`}/>
+          </div>
           <br />
           <span>{name.currencyCode}</span>
+          <br/>
+          <span>{` (${name.currencyName})`}</span>
         </div>
       </div>)
     },

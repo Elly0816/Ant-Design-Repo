@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
 import Error from './components/Error/Error';
-import { latestController, fluctController, tsController } from './api/exchange';
+// import { latestController, fluctController, tsController } from './api/exchange';
 import { type DataType } from './components/Tables/Helpers/Table.Utilities';
 import Home from './views/Home/Home';
 import Favs from './views/Favs/Favourites'
@@ -145,7 +145,9 @@ useEffect(()=> {
 
 const getData = useCallback((symbol: string) => {
   setLoading(true);
-  getTableData(symbol as string).then((res: tableData[]) =>
+  const controller = new AbortController();
+  const signal = controller.signal;
+  getTableData(symbol as string, signal).then((res: tableData[]) =>
         {
           let newData: DataType[] = res.map((data: tableData, index: number) => ({
           key: index.toString(),

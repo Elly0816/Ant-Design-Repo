@@ -16,15 +16,15 @@ let key = import.meta.env.VITE_API_KEY;
 
 const myHeaders = new Headers({'apikey': key});
 
-export const fluctController = new AbortController();
-export const tsController = new AbortController();
-export const convertController = new AbortController();
-export const latestController = new AbortController();
+// export const fluctController = new AbortController();
+// export const tsController = new AbortController();
+// export const convertController = new AbortController();
+// export const latestController = new AbortController();
 
-const fluctSignal = fluctController.signal;
-const timeSeriesSignal = tsController.signal;
-const convertSignal = convertController.signal;
-const latestSignal = latestController.signal;
+// const fluctSignal = fluctController.signal;
+// const timeSeriesSignal = tsController.signal;
+// const convertSignal = convertController.signal;
+// const latestSignal = latestController.signal;
 
 
 
@@ -36,7 +36,7 @@ let requestOptions: RequestInit = {
 
 
 
-export async function convert(amount: number, from: string, to: string, date?:string){
+export async function convert(amount: number, from: string, to: string, signal: AbortSignal, date?:string){
     /**
      * Enter date in the format YYY-MM-DD
      */
@@ -47,7 +47,7 @@ export async function convert(amount: number, from: string, to: string, date?:st
     }
 
     try {
-        const response = await fetch(url, {...requestOptions, signal: convertSignal});
+        const response = await fetch(url, {...requestOptions, signal: signal});
         const result = await response.json();
         console.log(result);
         return result;
@@ -59,7 +59,7 @@ export async function convert(amount: number, from: string, to: string, date?:st
 }
 
 
-export async function fluct(start_date: string, end_date: string, base?: string, symbolArray?: Array<Array<string>>) {
+export async function fluct(start_date: string, end_date: string, signal: AbortSignal, base?: string, symbolArray?: Array<Array<string>>) {
     
     const dateDiff = ((new Date(end_date).getTime() - new Date(start_date).getTime()) / (1000*3600*24));
 
@@ -80,7 +80,7 @@ export async function fluct(start_date: string, end_date: string, base?: string,
         }
       
         try {
-          const response = await fetch(url, {...requestOptions, signal: fluctSignal});
+          const response = await fetch(url, {...requestOptions, signal: signal});
           const result = await response.json();
           console.log(result);
           return result;
@@ -93,7 +93,7 @@ export async function fluct(start_date: string, end_date: string, base?: string,
   }
 
 
-export async function latest(symbolArray?: Array<Array<string>>, base?: string) : Promise<string>{
+export async function latest(signal:AbortSignal, symbolArray?: Array<Array<string>>, base?: string) : Promise<string>{
     
     let url = `${endpoint}/latest?`;
 
@@ -113,7 +113,7 @@ export async function latest(symbolArray?: Array<Array<string>>, base?: string) 
     }
 
     try{
-        const response = await fetch(url, {...requestOptions, signal: latestSignal});
+        const response = await fetch(url, {...requestOptions, signal: signal});
         const result = await response.json();
         console.log(result);
         return result;
@@ -127,7 +127,7 @@ export async function latest(symbolArray?: Array<Array<string>>, base?: string) 
 }
 
 
-export async function timeSeries(start_date: string, end_date: string, base?: string, symbols?: string) {
+export async function timeSeries(signal:AbortSignal, start_date: string, end_date: string, base?: string, symbols?: string) {
     
     /**
      * @param date in the format YYY-MM-DD
@@ -146,7 +146,7 @@ export async function timeSeries(start_date: string, end_date: string, base?: st
     }
     console.log(url);
     try {
-        const response = await fetch(url, {...requestOptions, signal: timeSeriesSignal}, );
+        const response = await fetch(url, {...requestOptions, signal: signal}, );
         const result = await response.json();
         // console.log(result);
         return result;
