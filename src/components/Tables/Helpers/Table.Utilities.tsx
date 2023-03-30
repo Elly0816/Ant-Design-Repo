@@ -162,15 +162,15 @@ export const numericFilters = (dataIndex: DataIndex,
         //{action: '<', value: 0.2, title: 'Rate'}
         switch(action){
           case '<':
-            return record[dataIndex] < value;
+            return (record[dataIndex] as number) < (value as number);
           case '>':
-            return record[dataIndex] > value;
+            return (record[dataIndex] as number) > (value as number);
           case '=':
-            return record[dataIndex] == value;
+            return (record[dataIndex] as number) == (value as number);
           case '<=':
-            return record[dataIndex] <= value;
+            return (record[dataIndex] as number) <= (value as number);
           case ">=":
-            return record[dataIndex] >= value;
+            return (record[dataIndex] as number) >= (value as number);
           default:
             return false;
         }
