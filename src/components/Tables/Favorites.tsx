@@ -89,6 +89,7 @@ export default function myTable (): ReactElement {
       dataIndex: 'name',
       key: 'key',
       width: '15%',
+      fixed: 'right',
       ...getColumnSearchProps('name', searchInput, handleSearch,
       rowSelection, handleReset,
        setSearchText, setSearchedColumn, searchedColumn, searchText),
