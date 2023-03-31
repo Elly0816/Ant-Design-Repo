@@ -7,51 +7,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { addedNotification, removedNotification } from './components/Notification/Notification';
 import Loading from './components/Loading/Loading';
 import Error from './components/Error/Error';
-// import { latestController, fluctController, tsController } from './api/exchange';
 import { type DataType } from './components/Tables/Helpers/Table.Utilities';
 import Home from './views/Home/Home';
 import Favs from './views/Favs/Favourites'
 
-
-// const Home = lazy(() => import('./views/Home/Home'));
-// const Favs = lazy(() => import('./views/Favs/Favourites'));
-// const Error = lazy(() => import('./components/Error/Error'));
-
-
-
-// interface COUNTRY {
-//   "name": string,
-//   "code": string,
-//   "capital": string,
-//   "region": string,
-//   "currency": {
-//       "code": string,
-//       "name": string,
-//       "symbol": string
-//   },
-//   "language": {
-//       "iso639_2"?: string,
-//       "code": string,
-//       "name": string,
-//       "nativeName"?: string
-//   },
-//   "flag": string
-// }
-
-// interface DataType {
-//   key: string;
-//   name: {
-//     countryCode: string,
-//     currencySymbol: string,
-//     currencyCode: string,
-//     currencyName: string
-// };
-//   rate: number;
-//   '24 hour change': number;
-//   '7 day change': number;
-//   '1 month change': number;
-//   '1 year change': number
-// }
 
 
 function reduceCountries(countries: COUNTRY[]): SelectProps[]{
@@ -127,7 +86,7 @@ useEffect(() => {
       let timer = setTimeout(() => {
         setLoading(false);    
         clearTimeout(timer);
-      }, 15000);
+      }, 1500);
       return () => {
         // latestController.abort();
         // fluctController.abort();
@@ -220,7 +179,7 @@ const getFavData = useCallback(() => {
   /*
     This sets the favData state to items in the data that are also in the favorite state
   */
-    setLoading(true);
+    // setLoading(true);
     const favs = data?.filter(item => {
       if (favorites.includes(item.name.currencyCode)){
         return item;
@@ -230,10 +189,10 @@ const getFavData = useCallback(() => {
     let favData: DataType[] =  favs as DataType[];
     console.log(favData);
     setFavData(favData);
-    let timer = setTimeout(()=> {
-      setLoading(false);
-      clearTimeout(timer);
-    }, 1000);
+    // let timer = setTimeout(()=> {
+    //   setLoading(false);
+    //   clearTimeout(timer);
+    // }, 1000);
 }, [data, favorites])
 
 

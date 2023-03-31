@@ -47,7 +47,10 @@ export default function myTable (): ReactElement {
   const [details, setDetail] = useState<{name: string, code: string}>();
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
- 
+
+// console.log("This is the selected Row key");
+// console.log(selectedRowKeys);
+
   
 
   const {data, loading, setLoading, favorites, editFavorites, defValue, getData} : {
@@ -61,7 +64,7 @@ export default function myTable (): ReactElement {
 }= useContext(appContext);
 
   // const [tableData, setTableData] = useState<DataType[]>(data);
-  console.log('xx', loading);
+  // console.log('xx', loading);
 
 
 
@@ -259,26 +262,21 @@ export default function myTable (): ReactElement {
 
   return <Fragment>
           <div className='table'>
-                <div style={{ marginBottom: 16 }}>
+                <div>
                     <div className="buttons-above-table">
                         <Mybutton/>
                         <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
                             {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
                         </Button>
                     </div>
+                    {hasSelected && 
                     <span style={{ marginLeft: 8 }}>
-                    {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                    {`Selected ${selectedRowKeys.length} items`}
                     </span>
+                    }
                 </div>
                 {!loading?
-                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}
-                summary={() => (
-                  <Table.Summary>
-                    <Table.Summary.Row>
-                      {/* <Table.Summary.Cell index={10}>Fix Right</Table.Summary.Cell> */}
-                    </Table.Summary.Row>
-                  </Table.Summary>
-                )}/>
+                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}/>
                 : <Loading item='Data'/>}
                 <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
             </div>;

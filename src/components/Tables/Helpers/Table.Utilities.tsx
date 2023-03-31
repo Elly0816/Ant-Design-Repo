@@ -156,8 +156,8 @@ export const numericFilters = (dataIndex: DataIndex,
         <FilterFilled style={{ color: filtered ? '#1890ff' : undefined }} />
       ),
       onFilter: (values, record): boolean => {
-        console.log("This is the value from the filter");
-        console.log(values);
+        // console.log("This is the value from the filter");
+        // console.log(values);
         const {action, value, title}  = values as unknown as {action: string, value: number, title: string}
         //{action: '<', value: 0.2, title: 'Rate'}
         switch(action){
