@@ -216,3 +216,37 @@ export const numericFilters = (dataIndex: DataIndex,
 
 })
   
+
+
+
+
+
+//Table on change filter and Sorter Interfaces
+
+export interface onTableFilter {
+  action: string,
+  value: number,
+  title: string
+}
+
+export interface tableFilters {
+  'name': string | null,
+  "24 hour change": onTableFilter[] | null,
+  "7 day change": onTableFilter[] |  null,
+  "1 month change": onTableFilter[] | null,
+  "1 year change": onTableFilter[] | null,
+  'rate': onTableFilter[] | null
+}
+
+export interface tableSorters {
+  column: {
+    title: string,
+    dataIndex: string,
+    key: string,
+    width: string,
+    sortDirections: Array<'descend' | 'ascend'>,
+  },
+  order: string,
+  field: string,
+  columnKey: string
+}

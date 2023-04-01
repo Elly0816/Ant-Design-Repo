@@ -2,7 +2,7 @@ import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties, F
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, InputRef, Tag } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
-import type { FilterConfirmProps } from 'antd/es/table/interface';
+import type { FilterConfirmProps, FilterValue, SorterResult } from 'antd/es/table/interface';
 import Highlighter from 'react-highlight-words';
 // import myButton from '../Button/Button';
 import "./Table.css";
@@ -10,7 +10,8 @@ import Mybutton from '../Button/Button';
 import { appContext } from '../../App';
 // import { tableData } from '../../helpers/getTableData';
 import Loading from '../Loading/Loading';
-import { DataType, getColumnSearchProps, numericFilters } from './Helpers/Table.Utilities';
+import { DataType, getColumnSearchProps, numericFilters, tableFilters, tableSorters } from './Helpers/Table.Utilities';
+import Indicator from './Helpers/Indicators';
 
 
 
@@ -24,6 +25,10 @@ export default function myTable (): ReactElement {
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   // const [loading, setLoading] = useState(false);
+
+  //state variables for keeping track of the filters and the sorters
+  const [filters, setFilters] = useState<tableFilters>();
+  const [sorters, setSorters] = useState<tableSorters>();
   
 
   const {loading, setLoading, editFavorites, favData, getData, defValue} : {
@@ -33,7 +38,15 @@ export default function myTable (): ReactElement {
     favData: DataType[],
     getData: (data: string) => void,
     defValue:  {label: string, value: string|undefined}
-}= useContext(appContext);
+  }= useContext(appContext);
+
+
+  function handleSortingFiltering(filters: Record<string, FilterValue | null>, sorters: SorterResult<DataType> | SorterResult<DataType>[]) {
+    const toFilter = filters as unknown as tableFilters;
+    const toSort = sorters as unknown as tableSorters;  
+    setFilters(toFilter);
+    setSorters(toSort);
+  }
 
 
   const start = () => {
@@ -220,18 +233,20 @@ export default function myTable (): ReactElement {
                 <div style={{ marginBottom: 16 }}>
                     <div className="buttons-above-table">
                         <Mybutton/>
+                        {
+                          (sorters?.order|| (filters!== undefined && Object.values(filters).some(value => value !== null))) && 
+                          <Indicator sorters={sorters as tableSorters} filters={filters as tableFilters}/>
+                        }
                         <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
                             {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
                         </Button>
                     </div>
-                    {hasSelected && 
-                    <span style={{ marginLeft: 8 }}>
-                    {`Selected ${selectedRowKeys.length} items`}
-                    </span>
-                    }
                 </div>
                 {!loading?
-                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
+                <Table onChange={(pagination, filters, sorters) => {
+                  handleSortingFiltering(filters, sorters);
+                 
+                }} scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={favData} rowKey={(record) => record.key}/>
                 : <Loading item='Favorites'/>}
             </div>;
           </Fragment>

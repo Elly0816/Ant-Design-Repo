@@ -1,8 +1,7 @@
-import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties, Fragment } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
+import { useRef, useState, ReactElement, useContext, useEffect, CSSProperties, Fragment, ReactNode } from 'react';
 import { Button, Input, Space, Table, InputRef, Tag, Drawer, DrawerProps } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
-import type { FilterConfirmProps } from 'antd/es/table/interface';
+import type { FilterConfirmProps, SorterResult } from 'antd/es/table/interface';
 // import Highlighter from 'react-highlight-words';
 // import myButton from '../Button/Button';
 import "./Table.css";
@@ -14,22 +13,10 @@ import MyDrawer from '../Drawer/myDrawer';
 import { getDetails } from '../../helpers/getTableData';
 import { DataType } from './Helpers/Table.Utilities';
 import { getColumnSearchProps, numericFilters } from './Helpers/Table.Utilities';
+import { tableFilters, tableSorters } from './Helpers/Table.Utilities';
+import { FilterValue } from 'antd/es/table/interface';
+import Indicator from './Helpers/Indicators';
 
-
-// interface DataType {
-//   key: string;
-//   name: {
-//     countryCode: string,
-//     currencySymbol: string,
-//     currencyCode: string,
-//     currencyName: string
-// };
-//   rate: number;
-//   '24 hour change': number;
-//   '7 day change': number;
-//   '1 month change': number;
-//   '1 year change': number
-// }
 
 type DataIndex = keyof DataType;
 
@@ -46,6 +33,12 @@ export default function myTable (): ReactElement {
 
   const [details, setDetail] = useState<{name: string, code: string}>();
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
+
+  //state variables for keeping track of the filters and the sorters
+  const [filters, setFilters] = useState<tableFilters>();
+  const [sorters, setSorters] = useState<tableSorters>();
+  // const [filters, setFilters] = useState<Record<string, FilterValue | null>>();
+  // const [sorters, setSorters] = useState<SorterResult<DataType> | SorterResult<DataType>[]>([]);
 
 
 // console.log("This is the selected Row key");
@@ -65,6 +58,13 @@ export default function myTable (): ReactElement {
 
   // const [tableData, setTableData] = useState<DataType[]>(data);
   // console.log('xx', loading);
+
+  function handleSortingFiltering(filters: Record<string, FilterValue | null>, sorters: SorterResult<DataType> | SorterResult<DataType>[]) {
+    const toFilter = filters as unknown as tableFilters;
+    const toSort = sorters as unknown as tableSorters;  
+    setFilters(toFilter);
+    setSorters(toSort);
+  }
 
 
 
@@ -265,18 +265,20 @@ export default function myTable (): ReactElement {
                 <div>
                     <div className="buttons-above-table">
                         <Mybutton/>
+                    {
+                      (sorters?.order|| (filters!== undefined && Object.values(filters).some(value => value !== null))) && 
+                      <Indicator sorters={sorters as tableSorters} filters={filters as tableFilters}/>
+                    }
                         <Button title="Refresh" type="default" onClick={start} disabled={false} loading={loading}>
                             {!loading && <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>}
                         </Button>
                     </div>
-                    {hasSelected && 
-                    <span style={{ marginLeft: 8 }}>
-                    {`Selected ${selectedRowKeys.length} items`}
-                    </span>
-                    }
                 </div>
                 {!loading?
-                <Table scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}/>
+                <Table onChange={(pagination, filters, sorters) => {
+                  handleSortingFiltering(filters, sorters);
+                 
+                }} scroll={{x:1000, y:350}} size='small' sticky={true} bordered={true} pagination={{position: ["topRight"], hideOnSinglePage: true}} columns={columns} dataSource={data} rowKey={(record) => record.key}/>
                 : <Loading item='Data'/>}
                 <MyDrawer getInfo={getDetails as (base: string, symbol: string) => Promise<object>} details={details as {name: string, code: string}} drawer={openDrawer} openDrawer={setOpenDrawer}/>
             </div>;
