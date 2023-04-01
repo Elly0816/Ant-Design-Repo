@@ -6,11 +6,10 @@ import {tableSorters, tableFilters, onTableFilter} from "./Table.Utilities";
 export default function Indicator({sorters, filters}: {sorters: tableSorters, filters: tableFilters}): ReactElement {
 
     return <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-    {sorters !== undefined && sorters.order !== undefined && <span>
+    {sorters !== undefined && sorters.order !== undefined &&
       <Tag color={sorters.order === 'descend' ? 'red' : 'green'}>
         {sorters.field.toUpperCase()} {sorters.order === 'descend' ? <CaretDownFilled/> : <CaretUpFilled/>}
-      </Tag>
-    </span>}
+      </Tag>}
     {filters && <span>
         {Object.entries(filters).map(([key, value]: [key: string, value: string | null | onTableFilter[]]): ReactNode | null => {
             
