@@ -4,8 +4,10 @@ Also the space between the buttons and the table ✅
 
 Current filter indicators 
 
-
-
+	Best way we can come up with to achieve that is:
+		Keep track of the applied filters and sorters in a state
+		map the sorters/filters array state to tags with conditional
+		colors
 
 Shutter Island
 Angels and Demons

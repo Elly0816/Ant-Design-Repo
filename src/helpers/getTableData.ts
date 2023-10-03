@@ -1,51 +1,61 @@
-import { latest, convert, timeSeries, fluct } from '../api/exchange';
-import { COUNTRIES } from './countries';
-import moment, { Moment } from 'moment';
+import { latest, convert, timeSeries, fluct } from '../api/exchange'
+import { COUNTRIES } from './countries'
+import moment, { Moment } from 'moment'
 
-
-function getSymbols(countries: any): Array<Array<string>>{
+function getSymbols(countries: any): Array<Array<string>> {
     const symbols = countries.map((country: any) => {
         return [country.code, country.currency.code, country.currency.name]
     })
-    return symbols;
+    return symbols
 }
 
-export async function getTableData(base: string, signal:AbortSignal) : Promise<tableData[]>{
+export async function getTableData(
+    base: string,
+    signal: AbortSignal
+): Promise<tableData[]> {
     /*
         This gets the latest rates and the changes over the past day, week, month and year.
 
     */
-    const symbols: Array<Array<string>> = getSymbols(COUNTRIES);
-    let today: Moment | string = moment();
-    const yesterday = today.subtract(24, 'hours').format().split('T')[0];
-    const lastWeek = today.subtract(7, 'days').format().split('T')[0];
-    const lastMonth = today.subtract(1, 'months').format().split('T')[0];
-    const lastYear = today.subtract(1, 'years').format().split('T')[0];
-    today = moment().format().split('T')[0];
+    const symbols: Array<Array<string>> = getSymbols(COUNTRIES)
+    let today: Moment | string = moment()
+    const yesterday = today.subtract(24, 'hours').format().split('T')[0]
+    const lastWeek = today.subtract(7, 'days').format().split('T')[0]
+    const lastMonth = today.subtract(1, 'months').format().split('T')[0]
+    const lastYear = today.subtract(1, 'years').format().split('T')[0]
+    today = moment().format().split('T')[0]
     let result: tableData[]
     // const rates = await latest(symbols, base).then((res: any) => {
     //     return res.rates;
     // });
 
     try {
-        let [rates, yesterdayF, lastWeekF, lastMonthF, lastYearF] = await Promise.all([
-            latest(signal, symbols, base),
-            fluct(today, yesterday, signal, base, symbols),
-            fluct(today, lastWeek, signal, base, symbols),
-            fluct(today, lastMonth, signal, base, symbols),
-            fluct(today, lastYear, signal, base, symbols),
-        ]);
+        let [rates, yesterdayF, lastWeekF, lastMonthF, lastYearF] =
+            await Promise.all([
+                latest(signal, symbols, base),
+                fluct(today, yesterday, signal, base, symbols),
+                fluct(today, lastWeek, signal, base, symbols),
+                fluct(today, lastMonth, signal, base, symbols),
+                fluct(today, lastYear, signal, base, symbols),
+            ])
 
-        console.log(mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF));
-        result = mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF);
-        return result;
-        
-    } catch (err){
-        console.log(err);
-        return err as unknown as tableData[];
+        // //console.log(
+        //     mapToResult(rates, yesterdayF, lastWeekF, lastMonthF, lastYearF)
+        // )
+        result = mapToResult(
+            rates,
+            yesterdayF,
+            lastWeekF,
+            lastMonthF,
+            lastYearF
+        )
+        // //console.log(result)
+        // //console.log('yy')
+        return result
+    } catch (err) {
+        //console.log(err)
+        return err as unknown as tableData[]
     }
-
-
 
     /*
         this should return: 
@@ -59,75 +69,91 @@ export async function getTableData(base: string, signal:AbortSignal) : Promise<t
                 }
             ]
     */
-
 }
 
-
-export async function getDetails(base:string, symbol:string, signal:AbortSignal): Promise<object>{
-
+export async function getDetails(
+    base: string,
+    symbol: string,
+    signal: AbortSignal
+): Promise<object> {
     /*
         This gets the details of the symbol passed into it
     */
 
-    let today: Moment | string = moment();
-    const lastYear = today.subtract(1, 'years').format().split('T')[0];
-    today = moment().format().split('T')[0];
+    let today: Moment | string = moment()
+    const lastYear = today.subtract(1, 'years').format().split('T')[0]
+    today = moment().format().split('T')[0]
 
-    const {rates} = await timeSeries(signal, lastYear, today, base, symbol);
-    // console.log(rates);
-    return rates as object;
-
+    const { rates } = await timeSeries(signal, lastYear, today, base, symbol)
+    // //console.log(rates);
+    return rates as object
 }
 
-
-function mapToResult(rates: any, yesterday: any, lastWeekF: any, lastMonthF: any, lastYearF:any): tableData[]{
+function mapToResult(
+    rates: any,
+    yesterday: any,
+    lastWeekF: any,
+    lastMonthF: any,
+    lastYearF: any
+): tableData[] {
     /*
         This maps the response of the api to the interface tableData
     */
 
-    let currRates = rates.rates;
-    let hours24 = yesterday.rates;
-    let weekRates = lastWeekF.rates;
-    let monthRates = lastMonthF.rates;
-    let yearRates = lastYearF.rates;
+    let currRates = rates.rates
+    let hours24 = yesterday.rates
+    let weekRates = lastWeekF.rates
+    let monthRates = lastMonthF.rates
+    let yearRates = lastYearF.rates
 
-    let toReturn: tableData[] = Object.keys(currRates).map((key):tableData => {
-        let country = COUNTRIES.find((country) => country.currency.code === key);
-        let countryCode = !country? 'unknown' : country.currency.code === 'EUR' ? 'EU' : country.currency.code === 'USD' ? 'US' : country.code;
-        let currencySymbol = !country? 'unknown' : country.currency.symbol;
-        let currencyCode = !country? 'unknown' : country.currency.code;
-        let currencyName = !country? 'unknown' : country.currency.name;
-        
+    let toReturn: tableData[] = Object.keys(currRates).map((key): tableData => {
+        let country = COUNTRIES.find((country) => country.currency.code === key)
+        let countryCode = !country
+            ? 'unknown'
+            : country.currency.code === 'EUR'
+            ? 'EU'
+            : country.currency.code === 'USD'
+            ? 'US'
+            : country.code
+        let currencySymbol = !country ? 'unknown' : country.currency.symbol
+        let currencyCode = !country ? 'unknown' : country.currency.code
+        let currencyName = !country ? 'unknown' : country.currency.name
+        //console.log('yy')
+        //console.log(yearRates)
+        //console.log(key)
+        //console.log(yearRates[key])
+
         return {
-            name: {key: key, 
+            name: {
+                key: key,
                 countryCode: countryCode,
                 currencyCode: currencyCode,
                 currencyName: currencyName,
-                currencySymbol: currencySymbol
+                currencySymbol: currencySymbol,
             },
             rates: currRates[key],
             hours24Diff: hours24[key].change_pct,
             weekDiff: weekRates[key].change_pct,
             monthDiff: monthRates[key].change_pct,
-            yearDiff: yearRates[key].change_pct
+            yearDiff: yearRates[key]?.change_pct,
         }
     })
 
-    return toReturn as tableData[];
+    return toReturn as tableData[]
 }
 
 export interface tableData {
     name: {
-        key: string,
-        countryCode: string,
-        currencySymbol: string,
-        currencyCode: string,
+        key: string
+        countryCode: string
+        currencySymbol: string
+        currencyCode: string
         currencyName: string
-    },
-    rates: number,
-    hours24Diff: number,
-    weekDiff: number,
-    monthDiff: number,
+    }
+    rates: number
+    hours24Diff: number
+    weekDiff: number
+    monthDiff: number
     yearDiff: number
 }
 
